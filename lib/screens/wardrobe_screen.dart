@@ -1,0 +1,332 @@
+import 'package:flutter/material.dart';
+
+import '../models/garment.dart';
+import '../services/garment_photo_service.dart';
+import '../services/wardrobe_repository.dart';
+import '../widgets/common.dart';
+import '../widgets/garment_photo.dart';
+import 'garment_detail_screen.dart';
+import 'garment_editor_screen.dart';
+
+class WardrobeScreen extends StatefulWidget {
+  const WardrobeScreen({
+    super.key,
+    required this.repository,
+    required this.photoService,
+  });
+  final WardrobeRepository repository;
+  final GarmentPhotoService photoService;
+  @override
+  State<WardrobeScreen> createState() => _WardrobeScreenState();
+}
+
+class _WardrobeScreenState extends State<WardrobeScreen> {
+  List<Garment> _items = [];
+  GarmentCategory? _category;
+  String _query = '';
+  bool _loading = true;
+  String? _error;
+  final _search = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final items = await widget.repository.list();
+      if (mounted) setState(() => _items = items);
+    } catch (e) {
+      if (mounted) setState(() => _error = wardrobeError(e));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _add() async {
+    final saved = await Navigator.push<Garment>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GarmentEditorScreen(
+          repository: widget.repository,
+          photoService: widget.photoService,
+        ),
+      ),
+    );
+    if (!mounted || saved == null) return;
+    setState(() {
+      _category = null;
+      _query = '';
+      _search.clear();
+    });
+    await _load();
+  }
+
+  Future<void> _open(Garment garment) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GarmentDetailScreen(
+          garment: garment,
+          repository: widget.repository,
+          photoService: widget.photoService,
+        ),
+      ),
+    );
+    if (mounted) await _load();
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final base = MediaQuery.sizeOf(context).width >= 900 ? 48.0 : 22.0;
+      final contentWidth = (constraints.maxWidth - base * 2).clamp(0.0, 1060.0);
+      final horizontal = (constraints.maxWidth - contentWidth) / 2;
+      final visible = filterGarments(_items, _query, _category);
+      final columns = contentWidth < 350
+          ? 1
+          : contentWidth < 650
+          ? 2
+          : contentWidth < 920
+          ? 3
+          : 4;
+      return CustomScrollView(
+        key: const PageStorageKey('wardrobe-scroll'),
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(horizontal, base, horizontal, 24),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const PageHeading(
+                    eyebrow: 'MY WARDROBE',
+                    title: '내 취향이 모이는 곳',
+                    description: '자주 입는 옷부터, 아껴 둔 한 벌까지. 나만의 옷장을 채워보세요.',
+                  ),
+                  const SizedBox(height: 24),
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 12,
+                    children: [
+                      Text(
+                        '전체 ${_items.length}벌',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      FilledButton.icon(
+                        key: const ValueKey('add-garment'),
+                        onPressed: _loading || _error != null ? null : _add,
+                        icon: const Icon(Icons.add),
+                        label: const Text('옷 추가'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    key: const ValueKey('garment-search'),
+                    controller: _search,
+                    onChanged: (v) => setState(() => _query = v),
+                    decoration: InputDecoration(
+                      hintText: '의류 이름으로 검색',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      suffixIcon: _query.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: '검색 지우기',
+                              onPressed: () => setState(() {
+                                _query = '';
+                                _search.clear();
+                              }),
+                              icon: const Icon(Icons.close),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('전체'),
+                        selected: _category == null,
+                        onSelected: (_) => setState(() => _category = null),
+                      ),
+                      ...GarmentCategory.values.map(
+                        (v) => ChoiceChip(
+                          label: Text(v.label),
+                          selected: _category == v,
+                          onSelected: (selected) =>
+                              setState(() => _category = selected ? v : null),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  if (!_loading && _error == null && _items.isNotEmpty)
+                    Text(
+                      '검색 결과 ${visible.length}벌',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          if (_loading)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(48),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            )
+          else if (_error != null)
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: horizontal),
+              sliver: SliverToBoxAdapter(
+                child: SurfaceCard(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.cloud_off_outlined, size: 40),
+                      const SizedBox(height: 16),
+                      Text(_error!, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: _load,
+                        child: const Text('다시 불러오기'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          else if (visible.isEmpty)
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: horizontal),
+              sliver: SliverToBoxAdapter(
+                child: SurfaceCard(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      Icon(
+                        _items.isEmpty
+                            ? Icons.checkroom_outlined
+                            : Icons.search_off,
+                        size: 64,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        _items.isEmpty ? '첫 번째 옷을 등록해 보세요' : '조건에 맞는 옷이 없어요',
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _items.isEmpty
+                            ? '옷 사진과 이름을 남기면 나만의 디지털 옷장이 시작돼요.'
+                            : '검색어나 카테고리를 바꿔보세요.',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      _items.isEmpty
+                          ? FilledButton(
+                              onPressed: _add,
+                              child: const Text('첫 옷 등록하기'),
+                            )
+                          : OutlinedButton(
+                              onPressed: () => setState(() {
+                                _query = '';
+                                _category = null;
+                                _search.clear();
+                              }),
+                              child: const Text('검색 조건 초기화'),
+                            ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: horizontal),
+              sliver: SliverGrid(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final garment = visible[index];
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
+                    margin: EdgeInsets.zero,
+                    child: InkWell(
+                      key: ValueKey('garment-${garment.id}'),
+                      onTap: () => _open(garment),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: GarmentPhoto(
+                              garment: garment,
+                              repository: widget.repository,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  garment.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  garment.category.label,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }, childCount: visible.length),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  mainAxisExtent: columns == 1 ? 330 : 300,
+                ),
+              ),
+            ),
+          const SliverToBoxAdapter(child: SizedBox(height: 48)),
+        ],
+      );
+    },
+  );
+}

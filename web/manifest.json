@@ -1,0 +1,35 @@
+{
+    "name": "My Closet",
+    "short_name": "My Closet",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#FAF8F4",
+    "theme_color": "#FAF8F4",
+    "description": "나다운 스타일의 시작, 나만의 AI 옷장.",
+    "orientation": "any",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
