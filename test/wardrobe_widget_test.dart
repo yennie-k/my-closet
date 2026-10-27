@@ -62,18 +62,20 @@ void main() {
         await typeField(tester, '의류 이름 *', '아이보리 셔츠');
         await tap(tester, find.byKey(const ValueKey('category-field')));
         await tap(tester, find.text('상의').last);
-        await typeField(tester, '세부 종류', '셔츠');
+        await typeField(tester, '세부 종류 직접 입력', '셔츠');
+        await tap(tester, find.text('색상').first);
         await typeField(tester, '대표 색상', '아이보리');
-        await typeField(tester, '추가 색상', '블루, 그레이');
+        await tap(tester, find.byKey(const ValueKey('additional-블루')));
+        await tap(tester, find.byKey(const ValueKey('additional-그레이')));
         await tap(tester, find.text('봄'));
         await tap(tester, find.text('가을'));
-        await tap(
-          tester,
-          find.widgetWithText(DropdownButtonFormField<GarmentThickness>, '두께'),
-        );
-        await tap(tester, find.text('보통').last);
+        await tap(tester, find.text('두께').first);
+        await tap(tester, find.byKey(const ValueKey('thickness-3')));
         await tap(tester, find.text('미니멀'));
-        await typeField(tester, '소재', '면 100%');
+        await tap(tester, find.text('소재').first);
+        await typeField(tester, '소재 직접 입력', '면 100%');
+        await tap(tester, find.byKey(const ValueKey('materials-add')));
+        await tap(tester, find.text('핏').first);
         await typeField(tester, '핏', '레귤러핏');
         await typeField(tester, '메모', '출근할 때 입어요.');
         repository.failSave = true;
@@ -88,9 +90,12 @@ void main() {
         expect(garment.seasons, [Season.spring, Season.autumn]);
         expect(garment.thickness, GarmentThickness.medium);
         expect(garment.styleTags, ['미니멀']);
+        expect(garment.materials, ['면 100%']);
         expect(garment.notes, '출근할 때 입어요.');
         expect(repository.photos[garment.id], isNotEmpty);
         expect(find.text('전체 1벌'), findsOneWidget);
+        await tap(tester, find.byKey(const ValueKey('category-filter-tops')));
+        expect(find.widgetWithText(ChoiceChip, '셔츠'), findsOneWidget);
         await tap(tester, find.byKey(ValueKey('garment-${garment.id}')));
         expect(find.text('옷 상세 보기'), findsOneWidget);
         await tap(tester, find.text('정보 수정'));
@@ -121,13 +126,17 @@ void main() {
     );
   }
 
-  testWidgets('Category and search filter cards and can reset empty results', (
+  testWidgets('Subtype and search filter cards and can reset empty results', (
     tester,
   ) async {
     final repository = MemoryWardrobe();
     for (final garment in [
-      testGarment(name: '흰 셔츠'),
-      testGarment(name: '청바지', category: GarmentCategory.bottoms),
+      testGarment(name: '흰 셔츠', subtype: '셔츠'),
+      testGarment(
+        name: '청바지',
+        category: GarmentCategory.bottoms,
+        subtype: '청바지',
+      ),
     ]) {
       await repository.save(garment, imageBytes: testPhoto());
     }
@@ -142,12 +151,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tap(tester, find.widgetWithText(ChoiceChip, '하의'));
+    await tap(tester, find.byKey(const ValueKey('category-filter-bottoms')));
+    await tap(tester, find.widgetWithText(ChoiceChip, '청바지'));
     expect(find.text('검색 결과 1벌'), findsOneWidget);
     expect(find.text('흰 셔츠'), findsNothing);
     await tester.enterText(find.byKey(const ValueKey('garment-search')), '셔츠');
     await tester.pumpAndSettle();
-    expect(find.text('조건에 맞는 옷이 없어요'), findsOneWidget);
+    expect(find.text('아직 등록된 옷이 없어요'), findsOneWidget);
     await tap(tester, find.text('검색 조건 초기화'));
     expect(find.text('검색 결과 2벌'), findsOneWidget);
   });

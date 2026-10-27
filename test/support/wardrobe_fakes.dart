@@ -11,10 +11,12 @@ Garment testGarment({
   String? id,
   String name = '아이보리 셔츠',
   GarmentCategory category = GarmentCategory.tops,
+  String subtype = '',
 }) => Garment(
   id: id ?? Garment.newId(),
   name: name,
   category: category,
+  subtype: subtype,
   createdAt: DateTime.utc(2026, 10, 26),
   updatedAt: DateTime.utc(2026, 10, 26),
   imageWidth: 8,

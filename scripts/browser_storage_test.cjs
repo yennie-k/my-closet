@@ -58,7 +58,9 @@ let child, ws;
   console.log(await waitStatus('WRITE_OK'));
   await send('Page.reload', {ignoreCache: true});
   console.log(await waitStatus('READ_AFTER_RELOAD_OK'));
-  console.log('PASS: real Chrome IndexedDB metadata + binary photos survived actual page reload.');
+  await send('Page.reload', {ignoreCache: true});
+  console.log(await waitStatus('UPDATED_AFTER_RELOAD_OK'));
+  console.log('PASS: v1 read did not overwrite data; v2 update + binary photos survived two actual page reloads.');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => {
   if (ws) ws.close();
   if (child && child.exitCode === null) child.kill();

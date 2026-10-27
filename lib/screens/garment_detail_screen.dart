@@ -127,7 +127,7 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> {
                         ),
                         _info('두께', _garment.thickness?.label ?? ''),
                         _info('스타일', _garment.styleTags.join(' · ')),
-                        _info('소재', _garment.material),
+                        _info('소재', _garment.materials.join(' · ')),
                         _info('핏', _garment.fit),
                         _info('메모', _garment.notes),
                         const Divider(),

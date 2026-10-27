@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/garment.dart';
+import '../models/wardrobe_filters.dart';
 import '../services/garment_photo_service.dart';
 import '../services/wardrobe_repository.dart';
 import '../widgets/common.dart';
@@ -23,6 +24,7 @@ class WardrobeScreen extends StatefulWidget {
 class _WardrobeScreenState extends State<WardrobeScreen> {
   List<Garment> _items = [];
   GarmentCategory? _category;
+  String? _subtype;
   String _query = '';
   bool _loading = true;
   String? _error;
@@ -46,7 +48,18 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
     });
     try {
       final items = await widget.repository.list();
-      if (mounted) setState(() => _items = items);
+      if (mounted) {
+        setState(() {
+          _items = items;
+          if (_subtype != null &&
+              !wardrobeSubtypes(
+                items,
+                category: _category,
+              ).any((v) => v.toLowerCase() == _subtype!.toLowerCase())) {
+            _subtype = null;
+          }
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _error = wardrobeError(e));
     } finally {
@@ -67,6 +80,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
     if (!mounted || saved == null) return;
     setState(() {
       _category = null;
+      _subtype = null;
       _query = '';
       _search.clear();
     });
@@ -93,7 +107,52 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
       final base = MediaQuery.sizeOf(context).width >= 900 ? 48.0 : 22.0;
       final contentWidth = (constraints.maxWidth - base * 2).clamp(0.0, 1060.0);
       final horizontal = (constraints.maxWidth - contentWidth) / 2;
-      final visible = filterGarments(_items, _query, _category);
+      final visible = filterWardrobeBySubtype(
+        _items,
+        _query,
+        _subtype,
+        category: _category,
+      );
+      final subtypeFilters = wardrobeSubtypes(_items, category: _category);
+      final categoryChips = <Widget>[
+        for (final category in <GarmentCategory?>[
+          null,
+          ...GarmentCategory.values,
+        ])
+          ChoiceChip(
+            key: ValueKey('category-filter-${category?.name ?? 'all'}'),
+            label: Text(_categoryLabel(category)),
+            labelStyle: const TextStyle(fontWeight: FontWeight.w700),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            selectedColor: Theme.of(context).colorScheme.primaryContainer,
+            selected: _category == category,
+            onSelected: (_) => setState(() {
+              _category = category;
+              _subtype = null;
+            }),
+          ),
+      ];
+      final filterChips = <Widget>[
+        ChoiceChip(
+          key: const ValueKey('subtype-filter-all'),
+          label: const Text('전체'),
+          selected: _subtype == null,
+          onSelected: (_) => setState(() => _subtype = null),
+          visualDensity: VisualDensity.compact,
+        ),
+        ...subtypeFilters.map(
+          (value) => ChoiceChip(
+            key: ValueKey('subtype-filter-value:$value'),
+            label: Text(subtypeFilterLabel(value)),
+            visualDensity: VisualDensity.compact,
+            selected:
+                _subtype != null &&
+                _subtype!.toLowerCase() == value.toLowerCase(),
+            onSelected: (selected) =>
+                setState(() => _subtype = selected ? value : null),
+          ),
+        ),
+      ];
       final columns = contentWidth < 350
           ? 1
           : contentWidth < 650
@@ -158,27 +217,43 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    children: [
-                      ChoiceChip(
-                        label: const Text('전체'),
-                        selected: _category == null,
-                        onSelected: (_) => setState(() => _category = null),
-                      ),
-                      ...GarmentCategory.values.map(
-                        (v) => ChoiceChip(
-                          label: Text(v.label),
-                          selected: _category == v,
-                          onSelected: (selected) =>
-                              setState(() => _category = selected ? v : null),
-                        ),
-                      ),
-                    ],
+                  const Text(
+                    '대분류',
+                    style: TextStyle(fontWeight: FontWeight.w700),
                   ),
+                  const SizedBox(height: 6),
+                  _filterRow(context, 'category', categoryChips),
+                  if (_category != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      key: const ValueKey('subcategory-section'),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            '소분류 · ${_categoryLabel(_category)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _filterRow(context, 'subtype', filterChips),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
-                  if (!_loading && _error == null && _items.isNotEmpty)
+                  if (!_loading && _error == null)
                     Text(
                       '검색 결과 ${visible.length}벌',
                       style: TextStyle(
@@ -233,15 +308,21 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        _items.isEmpty ? '첫 번째 옷을 등록해 보세요' : '조건에 맞는 옷이 없어요',
+                        _category != null
+                            ? '아직 등록된 옷이 없어요'
+                            : _items.isEmpty && _query.trim().isEmpty
+                            ? '첫 번째 옷을 등록해 보세요'
+                            : '조건에 맞는 옷이 없어요',
                         style: Theme.of(context).textTheme.titleLarge,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        _items.isEmpty
+                        _category != null
+                            ? '선택한 분류에 옷을 등록하거나 검색 조건을 바꿔보세요.'
+                            : _items.isEmpty
                             ? '옷 사진과 이름을 남기면 나만의 디지털 옷장이 시작돼요.'
-                            : '검색어나 카테고리를 바꿔보세요.',
+                            : '검색어나 대분류·소분류를 바꿔보세요.',
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
@@ -254,6 +335,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                               onPressed: () => setState(() {
                                 _query = '';
                                 _category = null;
+                                _subtype = null;
                                 _search.clear();
                               }),
                               child: const Text('검색 조건 초기화'),
@@ -329,4 +411,29 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
       );
     },
   );
+
+  String _categoryLabel(GarmentCategory? category) => category == null
+      ? '전체'
+      : category == GarmentCategory.dresses
+      ? '원피스·세트'
+      : category.label;
+
+  Widget _filterRow(BuildContext context, String id, List<Widget> chips) =>
+      MediaQuery.sizeOf(context).width < 900
+      ? SingleChildScrollView(
+          key: ValueKey('$id-filter-scroll'),
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              for (final chip in chips)
+                Padding(padding: const EdgeInsets.only(right: 8), child: chip),
+            ],
+          ),
+        )
+      : Wrap(
+          key: ValueKey('$id-filter-wrap'),
+          spacing: 8,
+          runSpacing: 6,
+          children: chips,
+        );
 }
