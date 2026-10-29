@@ -1,0 +1,570 @@
+{
+  "date": "2026-10-29",
+  "run": "20261029-run1",
+  "api": "http://127.0.0.1:54321",
+  "db": "127.0.0.1:54322",
+  "local_project": "C:\\Projects\\my_closet_supabase_local",
+  "cloud_connected": false,
+  "cli": "2.122.0",
+  "postgres": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+  "images": [
+    {
+      "name": "supabase_studio_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/studio:2026.10.19-sha-b375769",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_pg_meta_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/postgres-meta:v0.100.0",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_edge_runtime_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/edge-runtime:v1.77.8",
+      "state": "Up 29 minutes"
+    },
+    {
+      "name": "supabase_storage_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/storage-api:v1.84.19",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_rest_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/postgrest:v16.5",
+      "state": "Up 29 minutes"
+    },
+    {
+      "name": "supabase_realtime_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/realtime:v2.147.1",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_inbucket_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/mailpit:v1.31.3",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_auth_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/gotrue:v2.197.0",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_kong_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/kong:2.8.1",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_vector_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/vector:0.58.0-alpine",
+      "state": "Restarting (0) 47 seconds ago"
+    },
+    {
+      "name": "supabase_analytics_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/logflare:1.50.15",
+      "state": "Up 29 minutes (healthy)"
+    },
+    {
+      "name": "supabase_db_my_closet_supabase_local",
+      "image": "public.ecr.aws/supabase/postgres:17.11.0.006",
+      "state": "Up 30 minutes (healthy)"
+    }
+  ],
+  "remote_link_marker_present": false,
+  "docker_context": "desktop-linux (local Windows named pipe)",
+  "port_publication": {
+    "5432/tcp": [
+      {
+        "HostIp": "0.0.0.0",
+        "HostPort": "54322"
+      },
+      {
+        "HostIp": "::",
+        "HostPort": "54322"
+      }
+    ]
+  },
+  "prepare": {
+    "run": "20261029-run1",
+    "target": "http://127.0.0.1:54321",
+    "cloud_connection": false,
+    "checks": [
+      {
+        "name": "01_database",
+        "status": "PASS"
+      },
+      {
+        "name": "private_bucket",
+        "status": "PASS"
+      },
+      {
+        "name": "02_storage_policies",
+        "status": "PASS"
+      },
+      {
+        "name": "02_storage_contract_actual",
+        "status": "PASS"
+      }
+    ],
+    "backup": {
+      "path": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-run1\\before.dump",
+      "sha256": "763d96424e683cd36b59324b2f0206b2703a816f13dadc92f2dd85cbfca7704e",
+      "toc_valid": true,
+      "physical_storage_backup_needed": false
+    },
+    "protected_files_unchanged": true
+  },
+  "groups": {
+    "contracts": {
+      "pass": 1,
+      "fail": 0
+    },
+    "rls": {
+      "pass": 29,
+      "fail": 0
+    },
+    "storage": {
+      "pass": 33,
+      "fail": 0
+    }
+  },
+  "checks": [
+    {
+      "group": "contracts",
+      "name": "original DB security SQL (transaction rollback)",
+      "status": "PASS",
+      "detail": "Original assertions executed; no garment fixtures committed. Ready transition here is role simulation only."
+    },
+    {
+      "group": "rls",
+      "name": "A garment INSERT and complete v2 field roundtrip",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "B garment INSERT and own SELECT",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "A cannot SELECT B garment",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "B cannot SELECT A garment",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "A cannot UPDATE B garment (0 rows)",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Forged user_id INSERT rejected by RLS",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "user_id UPDATE rejected by column ACL",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "anon garment SELECT rejected",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "anon preferences SELECT rejected",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "A preferences INSERT",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "B preferences INSERT",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Preferences cross-user SELECT/UPDATE isolation",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Garment CAS first writer succeeds; stale update returns 0",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Preferences CAS first writer succeeds; stale update returns 0",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Protected photo write gives 42501, distinct from 0-row conflict",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Anonymous Auth claim sees no personal data (SQL simulation)",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "service_role cannot read preferences",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "service_role cannot read ordinary garment notes",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "service_role cannot UPDATE ordinary garment name",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "service_role has explicit photo SELECT and no general INSERT/DELETE",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Concurrent garment CAS (two DB sessions)",
+      "status": "PASS",
+      "detail": "Two connections: second UPDATE waited on lock, then affected 0 rows after first COMMIT."
+    },
+    {
+      "group": "rls",
+      "name": "Concurrent preferences CAS (two DB sessions)",
+      "status": "PASS",
+      "detail": "Two connections: second UPDATE waited on lock, then affected 0 rows after first COMMIT."
+    },
+    {
+      "group": "storage",
+      "name": "Private bucket with exact MIME/2 MiB limits",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Foreign upload to fresh reserved A path denied before owner upload",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Owner reserved upload",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "JWT owner download byte hash",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Cross-user authenticated download denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Unauthenticated and public downloads denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Foreign path upload denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Missing garment path upload denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Unreserved hash path in own garment denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Duplicate upload retry cannot overwrite bytes",
+      "status": "PASS",
+      "detail": {
+        "status": 400,
+        "data": {
+          "statusCode": "409",
+          "error": "Duplicate",
+          "message": "The resource already exists",
+          "code": "KeyAlreadyExists"
+        }
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Upsert cannot overwrite with different content",
+      "status": "PASS",
+      "detail": {
+        "status": 400,
+        "data": {
+          "statusCode": "403",
+          "error": "Unauthorized",
+          "message": "new row violates row-level security policy",
+          "code": "AccessDenied"
+        }
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Direct PUT replacement denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Signed URL issuance denied",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Own object list allowed",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Foreign object list reveals no entries",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Expired reservation upload denied",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Expired reservation acknowledgement rejected",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Client acknowledgement remains pending",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Acknowledged slot rejects another upload",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Expired reservation cannot be acknowledged or imply ready",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Unreferenced orphan fixtures remain owner-readable for cleanup",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Forged JWT subject rejected by real API signature validation",
+      "status": "PASS",
+      "detail": {
+        "http": 401
+      }
+    },
+    {
+      "group": "rls",
+      "name": "anon has no table CRUD grants and no insert/update column grants",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Replacement activates with retired grace (POLICY SIMULATION ONLY)",
+      "status": "PASS",
+      "detail": "Server-role fixture attestation only; no implemented verification worker."
+    },
+    {
+      "group": "storage",
+      "name": "New candidate blocked until retired cleanup",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Other-bucket policy control: create scoped fixture policy and upload/download",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Cross-user garment DELETE affects 0 and preserves row",
+      "status": "PASS"
+    },
+    {
+      "group": "rls",
+      "name": "Cross-user preferences DELETE affects 0 and preserves row",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Acknowledged candidate cannot be deleted",
+      "status": "PASS",
+      "detail": {
+        "http": 400,
+        "response": {
+          "statusCode": "403",
+          "error": "Unauthorized",
+          "message": "Access denied",
+          "code": "AccessDenied"
+        },
+        "bytes_preserved": true
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Active photo cannot be deleted (policy simulation fixture)",
+      "status": "PASS",
+      "detail": {
+        "http": 400,
+        "response": {
+          "statusCode": "403",
+          "error": "Unauthorized",
+          "message": "Access denied",
+          "code": "AccessDenied"
+        },
+        "bytes_preserved": true
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Retired photo protected during grace",
+      "status": "PASS",
+      "detail": {
+        "http": 400,
+        "response": {
+          "statusCode": "403",
+          "error": "Unauthorized",
+          "message": "Access denied",
+          "code": "AccessDenied"
+        },
+        "bytes_preserved": true
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Foreign single DELETE preserves orphan bytes",
+      "status": "PASS",
+      "detail": {
+        "http": 400,
+        "response": {
+          "statusCode": "403",
+          "error": "Unauthorized",
+          "message": "Access denied",
+          "code": "AccessDenied"
+        },
+        "bytes_preserved": true
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Foreign multi DELETE preserves both orphan objects",
+      "status": "PASS",
+      "detail": {
+        "http": 200,
+        "response": [],
+        "bytes_preserved": true
+      }
+    },
+    {
+      "group": "rls",
+      "name": "Owner garment DELETE completes CRUD; B row retained",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Owner single orphan DELETE succeeds after garment row deletion",
+      "status": "PASS",
+      "detail": {
+        "http": 200
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Owner multi orphan DELETE succeeds",
+      "status": "PASS",
+      "detail": {
+        "http": 200
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Retired grace expiry allows owner cleanup (clock fixture)",
+      "status": "PASS",
+      "detail": {
+        "http": 200,
+        "time_advanced_by_fixture": true
+      }
+    },
+    {
+      "group": "storage",
+      "name": "Other bucket DELETE unaffected by garment guards",
+      "status": "PASS",
+      "detail": {
+        "http": 200
+      }
+    },
+    {
+      "group": "rls",
+      "name": "Owner preferences DELETE completes CRUD; B preferences retained",
+      "status": "PASS"
+    },
+    {
+      "group": "storage",
+      "name": "Protected active and acknowledged photos remain byte-identical",
+      "status": "PASS"
+    }
+  ],
+  "helpers": [
+    {
+      "signature": "storage.operation()",
+      "definition": "CREATE OR REPLACE FUNCTION storage.operation()\n RETURNS text\n LANGUAGE plpgsql\n STABLE\nAS $function$\nBEGIN\n    RETURN current_setting('storage.operation', true);\nEND;\n$function$\n"
+    },
+    {
+      "signature": "storage.allow_only_operation(text)",
+      "definition": "CREATE OR REPLACE FUNCTION storage.allow_only_operation(expected_operation text)\n RETURNS boolean\n LANGUAGE sql\n STABLE\nAS $function$\n  WITH current_operation AS (\n    SELECT storage.operation() AS raw_operation\n  ),\n  normalized AS (\n    SELECT\n      CASE\n        WHEN raw_operation LIKE 'storage.%' THEN substr(raw_operation, 9)\n        ELSE raw_operation\n      END AS current_operation,\n      CASE\n        WHEN expected_operation LIKE 'storage.%' THEN substr(expected_operation, 9)\n        ELSE expected_operation\n      END AS requested_operation\n    FROM current_operation\n  )\n  SELECT CASE\n    WHEN requested_operation IS NULL OR requested_operation = '' THEN FALSE\n    ELSE COALESCE(current_operation = requested_operation, FALSE)\n  END\n  FROM normalized;\n$function$\n"
+    },
+    {
+      "signature": "storage.allow_any_operation(text[])",
+      "definition": "CREATE OR REPLACE FUNCTION storage.allow_any_operation(expected_operations text[])\n RETURNS boolean\n LANGUAGE sql\n STABLE\nAS $function$\n  WITH current_operation AS (\n    SELECT storage.operation() AS raw_operation\n  ),\n  normalized AS (\n    SELECT CASE\n      WHEN raw_operation LIKE 'storage.%' THEN substr(raw_operation, 9)\n      ELSE raw_operation\n    END AS current_operation\n    FROM current_operation\n  )\n  SELECT EXISTS (\n    SELECT 1\n    FROM normalized n\n    CROSS JOIN LATERAL unnest(expected_operations) AS expected_operation\n    WHERE expected_operation IS NOT NULL\n      AND expected_operation <> ''\n      AND n.current_operation = CASE\n        WHEN expected_operation LIKE 'storage.%' THEN substr(expected_operation, 9)\n        ELSE expected_operation\n      END\n  );\n$function$\n"
+    }
+  ],
+  "finalState": {
+    "auth_users": 2,
+    "garments": 6,
+    "preferences": 1,
+    "objects": 2,
+    "buckets": 2
+  },
+  "protected_files": {
+    "count": 50,
+    "changed": []
+  },
+  "worker_verified": false,
+  "active_photo_fixture": "server-role policy simulation; not verification worker output",
+  "original_storage_http_script_executed": false,
+  "local_http_adapter": "supabase/local/exercise.mjs + additional.mjs + delete-tests.mjs; adapted original assertions with loopback/redirect/fixture guards",
+  "unverified": [
+    "Real verification/reservation/GC worker and caller validation",
+    "Hash/size/MIME/decode mismatch handling by a worker",
+    "Process/network crash recovery and durable orphan queue",
+    "Quota/account rate limits and high concurrency",
+    "Real 24-hour elapsed grace (fixture clock used)",
+    "Storage list_v2 HTTP, metadata GET/HEAD, TUS, S3 and transformed images",
+    "Cloud version/config compatibility",
+    "Actual backup restoration",
+    "Flutter conflict UI and IndexedDB migration"
+  ]
+}

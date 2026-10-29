@@ -1,0 +1,931 @@
+{
+  "date": "2026-10-29",
+  "run": "20261029-worker-2",
+  "api": "http://127.0.0.1:54321",
+  "db": "127.0.0.1:54322",
+  "cloud_connection": false,
+  "sql_changes": false,
+  "cli": "2.122.0",
+  "edge_runtime": "1.77.8",
+  "deno_compatibility": "2.1.4",
+  "gateway_verify_jwt": true,
+  "verified_user_jwt_algorithm": "ES256",
+  "authentication": "Auth GET /auth/v1/user verification on every request, then authenticated/non-anonymous identity checks and caller-scoped RLS",
+  "dependency": {
+    "package": "@imagemagick/magick-wasm",
+    "version": "0.0.45",
+    "wasm_sha256": "54629cbcf06dd10db38b4d87fa6ab241b248c09c94f2d9689506e5f994ac5f0c"
+  },
+  "unit": {
+    "command": "node --experimental-strip-types --test supabase/tests/photo_worker.test.ts",
+    "pass": 24,
+    "fail": 0,
+    "evidence": "Executed successfully in this task after final permission/retry classification change"
+  },
+  "http": {
+    "run": "20261029-worker-http-2",
+    "checks": [
+      {
+        "name": "Edge JPG actual decode + ready",
+        "status": "PASS",
+        "expected_failure": false,
+        "detail": {
+          "http": 200,
+          "data": {
+            "status": "ready",
+            "garment_id": "2a1bfb4e-cad5-429f-b71b-1ca5898d9dd9",
+            "revision": 5,
+            "verified_at": "2026-10-29T07:52:44.324+00:00",
+            "already_verified": false
+          }
+        }
+      },
+      {
+        "name": "Edge PNG actual decode + ready",
+        "status": "PASS",
+        "expected_failure": false,
+        "detail": {
+          "http": 200,
+          "data": {
+            "status": "ready",
+            "garment_id": "eb126bc6-a927-4615-83a3-641bc9a4fad4",
+            "revision": 5,
+            "verified_at": "2026-10-29T07:52:44.858+00:00",
+            "already_verified": false
+          }
+        }
+      },
+      {
+        "name": "Edge WEBP actual decode + ready",
+        "status": "PASS",
+        "expected_failure": false,
+        "detail": {
+          "http": 200,
+          "data": {
+            "status": "ready",
+            "garment_id": "5dba7baa-7e1f-4530-8fa9-664c1c6398a5",
+            "revision": 5,
+            "verified_at": "2026-10-29T07:52:45.369+00:00",
+            "already_verified": false
+          }
+        }
+      },
+      {
+        "name": "Unauthenticated request denied",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 401,
+          "data": {
+            "error": "unauthorized",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Other user cannot verify owner photo",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 404,
+          "data": {
+            "error": "not_found_or_not_owned",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Forged JWT signature rejected",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 401,
+          "data": {
+            "code": "UNAUTHORIZED_ASYMMETRIC_JWT",
+            "message": "Invalid JWT",
+            "msg": "Invalid JWT"
+          }
+        }
+      },
+      {
+        "name": "service_role JWT is not accepted as user identity",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 401,
+          "data": {
+            "error": "unauthorized",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Client-supplied bucket/hash/ready fields rejected",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 400,
+          "data": {
+            "error": "invalid_request",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Client cannot set ready through Data API",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 403,
+          "code": "42501"
+        }
+      },
+      {
+        "name": "Completed duplicate request is idempotent",
+        "status": "PASS",
+        "expected_failure": false,
+        "detail": {
+          "http": 200,
+          "data": {
+            "status": "ready",
+            "garment_id": "2a1bfb4e-cad5-429f-b71b-1ca5898d9dd9",
+            "revision": 5,
+            "verified_at": "2026-10-29T07:52:44.324+00:00",
+            "already_verified": true
+          }
+        }
+      },
+      {
+        "name": "Reject size-mismatch without ready",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 422,
+          "data": {
+            "error": "size_mismatch",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Terminal failure retry keeps revision unchanged",
+        "status": "PASS",
+        "expected_failure": false
+      },
+      {
+        "name": "Reject hash-mismatch without ready",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 422,
+          "data": {
+            "error": "hash_mismatch",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Reject mime-mismatch without ready",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 422,
+          "data": {
+            "error": "mime_mismatch",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Reject missing-object without ready",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 404,
+          "data": {
+            "error": "not_found",
+            "retryable": true
+          }
+        }
+      },
+      {
+        "name": "Missing object can safely retry after object becomes available",
+        "status": "PASS",
+        "expected_failure": false,
+        "detail": {
+          "http": 200,
+          "data": {
+            "status": "ready",
+            "garment_id": "828ea090-6946-4a01-a4f5-dfc9a4d311e4",
+            "revision": 7,
+            "verified_at": "2026-10-29T07:52:48.536+00:00",
+            "already_verified": false
+          }
+        }
+      },
+      {
+        "name": "Reject corrupt-image without ready",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 422,
+          "data": {
+            "error": "invalid_image",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Expired reservation rejected",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 409,
+          "data": {
+            "error": "expired",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "reserved upload cannot bypass client_confirmed",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 409,
+          "data": {
+            "error": "client_confirmation_required",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Exact server reservation path required",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 409,
+          "data": {
+            "error": "reservation_mismatch",
+            "retryable": false
+          }
+        }
+      },
+      {
+        "name": "Concurrent Edge invocations commit a single attestation",
+        "status": "PASS",
+        "expected_failure": false,
+        "detail": {
+          "responses": [
+            {
+              "http": 200,
+              "status": "ready",
+              "garment_id": "9589702f-5f73-4b59-b5fb-24a6db1fb97c",
+              "revision": 5,
+              "verified_at": "2026-10-29T07:52:52.494+00:00",
+              "already_verified": false
+            },
+            {
+              "http": 409,
+              "error": "revision_conflict",
+              "retryable": true
+            },
+            {
+              "http": 409,
+              "error": "revision_conflict",
+              "retryable": true
+            },
+            {
+              "http": 409,
+              "error": "verification_in_progress",
+              "retryable": true
+            },
+            {
+              "http": 409,
+              "error": "verification_in_progress",
+              "retryable": true
+            },
+            {
+              "http": 409,
+              "error": "verification_in_progress",
+              "retryable": true
+            },
+            {
+              "http": 409,
+              "error": "verification_in_progress",
+              "retryable": true
+            },
+            {
+              "http": 409,
+              "error": "verification_in_progress",
+              "retryable": true
+            }
+          ],
+          "revision_increments": 2
+        }
+      },
+      {
+        "name": "Fresh checking lease reports retryable in-progress",
+        "status": "PASS",
+        "expected_failure": true,
+        "detail": {
+          "http": 409,
+          "data": {
+            "error": "verification_in_progress",
+            "retryable": true
+          }
+        }
+      }
+    ],
+    "jwt_algorithm": "ES256",
+    "summary": {
+      "pass": 22,
+      "fail": 0
+    }
+  },
+  "races": {
+    "checks": [
+      {
+        "name": "Actual Storage object replaced between validation reads",
+        "status": "PASS",
+        "detail": {
+          "error": "object_changed",
+          "ready": false,
+          "upload_state": "client_confirmed"
+        }
+      },
+      {
+        "name": "Actual Storage candidate deleted during verification",
+        "status": "PASS",
+        "detail": {
+          "error": "not_found",
+          "ready": false,
+          "upload_state": "failed"
+        }
+      },
+      {
+        "name": "Actual reservation replacement cannot be overwritten by stale worker",
+        "status": "PASS",
+        "detail": {
+          "error": "revision_conflict",
+          "ready": false,
+          "upload_state": "reserved"
+        }
+      },
+      {
+        "name": "Actual metadata revision conflict blocks stale attestation",
+        "status": "PASS",
+        "detail": {
+          "error": "revision_conflict",
+          "ready": false,
+          "upload_state": "checking"
+        }
+      },
+      {
+        "name": "Real elapsed lease recovers through the Edge HTTP endpoint",
+        "status": "PASS",
+        "detail": {
+          "http": 200,
+          "lease_expiry": "real elapsed time; no timestamp override"
+        }
+      }
+    ],
+    "mode": "production core+adapter+decoder with real local DB/Storage; deterministic mutations injected at decoder boundary",
+    "summary": {
+      "pass": 5,
+      "fail": 0
+    }
+  },
+  "replacement": {
+    "checks": [
+      {
+        "name": "Real worker replacement changes MIME and retires old verified photo",
+        "status": "PASS",
+        "detail": {
+          "http": 200,
+          "retired_old_photo_preserved": true
+        }
+      },
+      {
+        "name": "Failed replacement preserves previous real attestation",
+        "status": "PASS",
+        "detail": {
+          "http": 422,
+          "error": "hash_mismatch",
+          "old_ready_preserved": true,
+          "new_candidate_activated": false
+        }
+      }
+    ],
+    "summary": {
+      "pass": 2,
+      "fail": 0
+    }
+  },
+  "regression": {
+    "groups": {
+      "contracts": {
+        "pass": 1,
+        "fail": 0
+      },
+      "rls": {
+        "pass": 29,
+        "fail": 0
+      },
+      "storage": {
+        "pass": 33,
+        "fail": 0
+      }
+    },
+    "catalog_contract_passed": true,
+    "previous_rows_unchanged": true,
+    "source_adaptations": [
+      {
+        "original": "supabase/local/exercise.mjs",
+        "sha256": "c62929a44effa8dee685b8a1de6d26940d1b0aad7a0d38b3dd4a19bfe0720034",
+        "adapted": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-regression\\exercise.adapted.mjs",
+        "changes": [
+          "separate run IDs, paths and control bucket/policy",
+          "absolute import of original local guard",
+          "two empty-DB fixture counts scoped to fresh A/B users; same RLS/ACL assertions"
+        ]
+      },
+      {
+        "original": "supabase/local/additional.mjs",
+        "sha256": "6c6f9bf3507c904f800a9d70cbbd14d5bf195cf1baa1e856cd7b067e1f1d7947",
+        "adapted": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-regression\\additional.adapted.mjs",
+        "changes": [
+          "separate run IDs, paths and control bucket/policy",
+          "absolute import of original local guard"
+        ]
+      },
+      {
+        "original": "supabase/local/delete-tests.mjs",
+        "sha256": "934549a8bb435165915bdf4d961a1a5e39e88d327b2de4560ab479dfcaf3c469",
+        "adapted": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-regression\\delete-tests.adapted.mjs",
+        "changes": [
+          "separate run IDs, paths and control bucket/policy",
+          "absolute import of original local guard"
+        ]
+      }
+    ],
+    "checks": [
+      {
+        "group": "contracts",
+        "name": "original DB security SQL (transaction rollback)",
+        "status": "PASS",
+        "detail": "Original assertions executed; no garment fixtures committed. Ready transition here is role simulation only."
+      },
+      {
+        "group": "rls",
+        "name": "A garment INSERT and complete v2 field roundtrip",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "B garment INSERT and own SELECT",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "A cannot SELECT B garment",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "B cannot SELECT A garment",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "A cannot UPDATE B garment (0 rows)",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Forged user_id INSERT rejected by RLS",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "user_id UPDATE rejected by column ACL",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "anon garment SELECT rejected",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "anon preferences SELECT rejected",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "A preferences INSERT",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "B preferences INSERT",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Preferences cross-user SELECT/UPDATE isolation",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Garment CAS first writer succeeds; stale update returns 0",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Preferences CAS first writer succeeds; stale update returns 0",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Protected photo write gives 42501, distinct from 0-row conflict",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Anonymous Auth claim sees no personal data (SQL simulation)",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "service_role cannot read preferences",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "service_role cannot read ordinary garment notes",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "service_role cannot UPDATE ordinary garment name",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "service_role has explicit photo SELECT and no general INSERT/DELETE",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Concurrent garment CAS (two DB sessions)",
+        "status": "PASS",
+        "detail": "Two connections: second UPDATE waited on lock, then affected 0 rows after first COMMIT."
+      },
+      {
+        "group": "rls",
+        "name": "Concurrent preferences CAS (two DB sessions)",
+        "status": "PASS",
+        "detail": "Two connections: second UPDATE waited on lock, then affected 0 rows after first COMMIT."
+      },
+      {
+        "group": "storage",
+        "name": "Private bucket with exact MIME/2 MiB limits",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Foreign upload to fresh reserved A path denied before owner upload",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Owner reserved upload",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "JWT owner download byte hash",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Cross-user authenticated download denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Unauthenticated and public downloads denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Foreign path upload denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Missing garment path upload denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Unreserved hash path in own garment denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Duplicate upload retry cannot overwrite bytes",
+        "status": "PASS",
+        "detail": {
+          "status": 400,
+          "data": {
+            "statusCode": "409",
+            "error": "Duplicate",
+            "message": "The resource already exists",
+            "code": "KeyAlreadyExists"
+          }
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Upsert cannot overwrite with different content",
+        "status": "PASS",
+        "detail": {
+          "status": 400,
+          "data": {
+            "statusCode": "403",
+            "error": "Unauthorized",
+            "message": "new row violates row-level security policy",
+            "code": "AccessDenied"
+          }
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Direct PUT replacement denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Signed URL issuance denied",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Own object list allowed",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Foreign object list reveals no entries",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Expired reservation upload denied",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Expired reservation acknowledgement rejected",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Client acknowledgement remains pending",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Acknowledged slot rejects another upload",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Expired reservation cannot be acknowledged or imply ready",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Unreferenced orphan fixtures remain owner-readable for cleanup",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Forged JWT subject rejected by real API signature validation",
+        "status": "PASS",
+        "detail": {
+          "http": 401
+        }
+      },
+      {
+        "group": "rls",
+        "name": "anon has no table CRUD grants and no insert/update column grants",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Replacement activates with retired grace (POLICY SIMULATION ONLY)",
+        "status": "PASS",
+        "detail": "Server-role fixture attestation only; no implemented verification worker."
+      },
+      {
+        "group": "storage",
+        "name": "New candidate blocked until retired cleanup",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Other-bucket policy control: create scoped fixture policy and upload/download",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Cross-user garment DELETE affects 0 and preserves row",
+        "status": "PASS"
+      },
+      {
+        "group": "rls",
+        "name": "Cross-user preferences DELETE affects 0 and preserves row",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Acknowledged candidate cannot be deleted",
+        "status": "PASS",
+        "detail": {
+          "http": 400,
+          "response": {
+            "statusCode": "403",
+            "error": "Unauthorized",
+            "message": "Access denied",
+            "code": "AccessDenied"
+          },
+          "bytes_preserved": true
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Active photo cannot be deleted (policy simulation fixture)",
+        "status": "PASS",
+        "detail": {
+          "http": 400,
+          "response": {
+            "statusCode": "403",
+            "error": "Unauthorized",
+            "message": "Access denied",
+            "code": "AccessDenied"
+          },
+          "bytes_preserved": true
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Retired photo protected during grace",
+        "status": "PASS",
+        "detail": {
+          "http": 400,
+          "response": {
+            "statusCode": "403",
+            "error": "Unauthorized",
+            "message": "Access denied",
+            "code": "AccessDenied"
+          },
+          "bytes_preserved": true
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Foreign single DELETE preserves orphan bytes",
+        "status": "PASS",
+        "detail": {
+          "http": 400,
+          "response": {
+            "statusCode": "403",
+            "error": "Unauthorized",
+            "message": "Access denied",
+            "code": "AccessDenied"
+          },
+          "bytes_preserved": true
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Foreign multi DELETE preserves both orphan objects",
+        "status": "PASS",
+        "detail": {
+          "http": 200,
+          "response": [],
+          "bytes_preserved": true
+        }
+      },
+      {
+        "group": "rls",
+        "name": "Owner garment DELETE completes CRUD; B row retained",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Owner single orphan DELETE succeeds after garment row deletion",
+        "status": "PASS",
+        "detail": {
+          "http": 200
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Owner multi orphan DELETE succeeds",
+        "status": "PASS",
+        "detail": {
+          "http": 200
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Retired grace expiry allows owner cleanup (clock fixture)",
+        "status": "PASS",
+        "detail": {
+          "http": 200,
+          "time_advanced_by_fixture": true
+        }
+      },
+      {
+        "group": "storage",
+        "name": "Other bucket DELETE unaffected by garment guards",
+        "status": "PASS",
+        "detail": {
+          "http": 200
+        }
+      },
+      {
+        "group": "rls",
+        "name": "Owner preferences DELETE completes CRUD; B preferences retained",
+        "status": "PASS"
+      },
+      {
+        "group": "storage",
+        "name": "Protected active and acknowledged photos remain byte-identical",
+        "status": "PASS"
+      }
+    ]
+  },
+  "real_worker_attestation_verified": true,
+  "source": [
+    {
+      "file": "adapter.ts",
+      "sha256": "43a17a6395cf7bdb3f8a0db414773bda9d5a9650c5604144b8bc8b6c63246f47"
+    },
+    {
+      "file": "core.ts",
+      "sha256": "f6eccc2c16f6d7c6b9495c1f61bdfb89a5c6191eccdbcd5c9d255b0326cf582f"
+    },
+    {
+      "file": "deno.json",
+      "sha256": "064a16f2d3b713568ecb5848816b09a52ba7d1e57239d5ddb464b5bc0c93001a"
+    },
+    {
+      "file": "image.ts",
+      "sha256": "e8b8c9802399a7bdf7bf2905f1c62b36f895e994d23aa5ac9917bf8983936d44"
+    },
+    {
+      "file": "index.ts",
+      "sha256": "27282f80351db81fb61c205c5faf1a03af1301d0efb40477227d057820d19fb0"
+    }
+  ],
+  "preservation": {
+    "protected_files": 50,
+    "changed_files": [],
+    "original_garments": 6,
+    "original_preferences": 1,
+    "original_photo_hashes_verified": 2,
+    "all_original_rows_and_photos_unchanged": true
+  },
+  "final_state": {
+    "auth_users": 8,
+    "garments": 42,
+    "preferences": 2,
+    "objects": 35,
+    "buckets": 3
+  },
+  "backup": {
+    "path": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-2\\before-worker.dump",
+    "sha256": "4542be518643c4223172005db86f258255345fed28cc21c7958dbbe0df488910",
+    "restore_tested": false
+  },
+  "initial_failures": [
+    "Setup attempt worker-1: multi-line JSON snapshot parser rejected full result; fixed with full JSON parsing before DB mutation; failed folder retained.",
+    "Decoder API: getPixels requires callback; initial unit failures were unexpected, fixed.",
+    "Decoder listLength=1 rejected valid static images due temporary decoder images; limit changed to 4 with separate animated-container rejection; final tests passed.",
+    "Sandbox npm DNS and CLI telemetry access failed; rerun with approved local dependency/tool access."
+  ],
+  "remaining": [
+    "No cloud deployment or cloud compatibility test",
+    "No reservation endpoint, scheduled durable verification queue, rate limit/quota or GC worker",
+    "Privileged Storage mutation after the final object read and before/after DB commit cannot be atomically prevented across Storage and PostgreSQL; clients cannot do this under tested RLS",
+    "Ready duplicate returns previous attestation snapshot, not perpetual file-existence proof",
+    "Limits: 2 MiB, 4096px per dimension, 4 million pixels; static JPG/PNG/WebP only",
+    "No high-load/real process kill or large-image performance benchmark; deterministic failure/lease recovery tests are not a durable queue test",
+    "No Flutter/IndexedDB/browser CORS integration or full backup restoration test"
+  ]
+}
