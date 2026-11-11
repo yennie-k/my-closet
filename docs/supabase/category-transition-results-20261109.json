@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-09",
+  "scope": "shared garment editor category/subtype transitions and temporary field cleanup",
+  "files_changed_this_task": [
+    "lib/screens/garment_editor_screen.dart",
+    "lib/widgets/garment_input_fields.dart",
+    "lib/widgets/garment_edit_rules.dart",
+    "test/garment_classification_change_test.dart",
+    "test/garment_category_ux_test.dart",
+    "test/garment_input_ux_test.dart",
+    "test/wardrobe_small_ux_test.dart",
+    "docs/supabase/category-transition-20261109.md",
+    "docs/supabase/category-transition-results-20261109.json",
+    "docs/supabase/category-input-ux-20261109.md",
+    "README.md"
+  ],
+  "rules": {
+    "initial_load": "preserve saved values exactly in the form; no cleanup on load",
+    "new_registration": "clear incompatible or unclassified subtype/fit drafts without confirmation",
+    "existing_edit": "confirm before clearing incompatible or unclassified subtype/fit drafts; cancellation preserves category and input state",
+    "compatible_values": "retain subtype supported by target category and fit supported by resulting category/subtype",
+    "custom_values": "preserve stored originals; cannot assume cross-category compatibility, so confirm temporary cleanup in existing edits",
+    "subtype_typing": "separate pending text from applied subtype; apply with button or Enter; save applies/reviews pending text before serialization",
+    "foreign_standard_subtype": "reject new application under wrong category; no automatic rewrite of legacy originals",
+    "return_to_previous_category": "do not restore cleared drafts automatically; reopening an unsaved edit reloads the stored original",
+    "common_fields": "retain name, colors, seasons, tags, materials, thickness, notes and photo",
+    "persistence": "writes only on explicit save; serialize applied subtype/fit only; retain original server CAS identity"
+  },
+  "validation": {
+    "sequential_execution": true,
+    "flutter_analyze": "No issues found",
+    "flutter_test": { "passed": 141, "failed": 0, "existing": 128, "new": 13 },
+    "targeted_existing_regression": { "passed": 34, "failed": 0 },
+    "default_web_build": { "exit_code": 0, "output": "build/web" },
+    "development_web_build": { "exit_code": 0, "output": "build/web_photos" },
+    "git_diff_check": "passed",
+    "protected_sources": { "compared": 34, "changed": 0 }
+  },
+  "coverage": [
+    "new outerwear to shoes without dialog; no implicit restoration",
+    "existing coat to skirt to shoes on local and server editor paths",
+    "cancel category change preserves category, pending text and existing fit",
+    "subtype change cancellation and incompatible-fit cleanup",
+    "compatible fit retention and all common v2 fields preserved",
+    "save emits only new category/subtype/fit; no hidden prior values",
+    "unchanged custom legacy original, unsaved back navigation and reopen",
+    "pending custom text reviewed before save; cancellation performs no write",
+    "wrong-category standard subtype rejection and custom subtype application",
+    "long custom values, 360px, text scale 1.5, all three themes",
+    "existing auth, CRUD, IndexedDB, photo failure/ready/cache and JPEG restart tests"
+  ],
+  "development_failures_resolved": [
+    "DropdownButtonFormField.didChange re-entered onChanged; replaced rollback with controlled DropdownButton and plain FormField",
+    "test helper attempted a nonexistent TextFormField.decoration getter; corrected field lookup",
+    "updated old value-retention expectations to explicit user-approved draft cleanup"
+  ],
+  "protection": {
+    "real_user_data_accessed_or_written": false,
+    "real_photos_accessed_or_uploaded": false,
+    "database_or_storage_api_calls": 0,
+    "schema_model_v2_or_dto_changed": false,
+    "revision_policy_changed": false,
+    "jpeg_restart_processing_changed": false,
+    "sql_rls_storage_policies_or_edge_functions_changed": false,
+    "data_reset_or_bulk_migration": false,
+    "cloud_connection_or_deployment": false,
+    "git_commit_or_push": false
+  },
+  "not_revalidated": [
+    "real Supabase Auth/DB/Storage HTTP integration (server test doubles used)",
+    "manual Edge interaction after this change",
+    "physical Android/iOS devices"
+  ]
+}

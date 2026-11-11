@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-09",
+  "scope": "shared garment editor category/subtype presentation and explicit fit review before changed saves",
+  "files_changed_this_task": [
+    "lib/models/garment_options.dart",
+    "lib/widgets/garment_input_fields.dart",
+    "lib/widgets/garment_illustrations.dart",
+    "lib/screens/garment_editor_screen.dart",
+    "test/garment_category_ux_test.dart",
+    "tool/fit_illustration_preview_test.dart",
+    "docs/supabase/category-input-ux-20261109.md",
+    "docs/supabase/category-input-ux-results-20261109.json",
+    "README.md"
+  ],
+  "validation": {
+    "sequential_execution": true,
+    "flutter_analyze": "No issues found",
+    "flutter_test": { "passed": 128, "failed": 0, "existing": 109, "new": 19 },
+    "authored_illustration_render_test": { "passed": 1, "failed": 0, "visually_inspected": true },
+    "default_web_build": { "exit_code": 0, "output": "build/web" },
+    "development_web_build": { "exit_code": 0, "output": "build/web_photos", "config": "config/supabase.crud.local.json" },
+    "build_stderr_note": "Wasm dry run succeeded advice was rendered as NativeCommandError by PowerShell stderr redirection; both JS builds exited 0 with Built output. No separate Wasm execution claim.",
+    "git_diff_check": "passed"
+  },
+  "coverage": [
+    "all 8 stored category values and all 57 built-in subtype suggestions",
+    "actual shared editor transitions across tops, pants, skirts, shorts, coats, light puffers, jackets, windbreakers, dresses, jumpsuits and sets",
+    "footwear, bags, accessories and other allow empty fit without recommendations",
+    "inappropriate previous fit retained, save confirmation prevents silent writes, cancellation and compatible reselection",
+    "explicit preservation of custom fit, custom subtype, materials, original material string, colors, seasons, tags, ID and creation time",
+    "original server revision identity passed unchanged and DTO v2 round trip",
+    "IndexedDB memory repository metadata save and reopen preserve photo bytes",
+    "no-op custom legacy save performs no write or confirmation",
+    "3 themes at 360/1440px and text scale 1.5",
+    "existing auth, preferences, hierarchical filters, CRUD, image failure protection, ready display, logout cache and JPEG restart tests"
+  ],
+  "compatibility": {
+    "garment_model_version": 2,
+    "schema_changed": false,
+    "migration_required": false,
+    "server_dto_changed": false,
+    "revision_policy_changed": false,
+    "fit_subtype_autocleared": false,
+    "material_patterns_changed": false,
+    "palette_changed": false,
+    "photo_pipeline_changed": false
+  },
+  "protection": {
+    "protected_sources_compared": 33,
+    "protected_sources_changed": 0,
+    "ui_options_file_intentionally_excluded_from_protected_count": "lib/models/garment_options.dart",
+    "real_browser_indexeddb_accessed": false,
+    "real_user_photos_accessed": false,
+    "database_or_storage_api_calls": 0,
+    "sql_executed": false,
+    "sql_rls_storage_policies_or_edge_functions_modified": false,
+    "data_reset_or_migration": false,
+    "cloud_connection_or_deployment": false,
+    "git_commit_or_push": false
+  },
+  "not_revalidated": [
+    "real Supabase HTTP/Auth/RLS/Storage/ready worker integration (existing test doubles used)",
+    "actual Edge manual interaction after this UI change",
+    "physical Android/iOS devices"
+  ],
+  "future_design_only": [
+    "sleeve length and garment length as independent attributes",
+    "per-component set fits",
+    "footwear width/size or filling-specific structured material details"
+  ]
+}

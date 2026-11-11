@@ -20,7 +20,7 @@
 
 ## 환경과 인증 확인
 
-- 로컬 프로젝트: `C:\Projects\my_closet_supabase_local`
+- 로컬 프로젝트: `<LOCAL_SUPABASE_DIR>`
 - API / DB: `http://127.0.0.1:54321` / `127.0.0.1:54322`
 - CLI: 2.122.0, Edge Runtime: 1.77.8, 런타임 표시 Deno 호환성: 2.1.4
 - PostgreSQL: 17.11, Storage: v1.84.19 — 기존 스택 유지

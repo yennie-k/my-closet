@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../models/garment.dart';
+import '../models/garment_options.dart';
 
 /// Original schematic patterns. These are not photos or physical simulations.
 class FabricPatternPainter extends CustomPainter {
@@ -99,108 +100,270 @@ class FabricPatternPainter extends CustomPainter {
       oldDelegate.pattern != pattern || oldDelegate.color != color;
 }
 
+/// Original garment outlines; proportions compare fits, not garment length.
 class FitSilhouettePainter extends CustomPainter {
-  const FitSilhouettePainter(this.fit, this.category, this.color);
-  final String fit;
+  const FitSilhouettePainter(
+    this.fit,
+    this.category,
+    this.color, {
+    this.subtype = '',
+  });
+  final String fit, subtype;
   final GarmentCategory? category;
   final Color color;
+
+  double get _width => switch (fit) {
+    '스키니핏' => 16,
+    '슬림핏' => 21,
+    '오버핏' => 34,
+    '루즈핏' => 30,
+    '와이드핏' => 34,
+    _ => 26,
+  };
+
   @override
   void paint(Canvas canvas, Size size) {
+    final context = fitContextFor(category, subtype);
+    if (context == FitContext.optional) return;
     canvas.save();
     canvas.scale(size.width / 100, size.height / 110);
-    final path = Path();
-    final width = switch (fit) {
-      '스키니핏' => 15.0,
-      '슬림핏' => 21.0,
-      '오버핏' => 38.0,
-      '루즈핏' => 33.0,
-      '와이드핏' => 39.0,
-      _ => 27.0,
-    };
-    if (category == GarmentCategory.bottoms && (fit == 'A라인' || fit == 'H라인')) {
-      final hem = fit == 'A라인' ? 45.0 : 30.0;
-      path.moveTo(23, 8);
-      path.lineTo(77, 8);
-      path.lineTo(50 + hem, 102);
-      path.lineTo(50 - hem, 102);
-      path.close();
-    } else if (category == GarmentCategory.bottoms) {
-      final hem = switch (fit) {
-        '테이퍼드핏' => 10.0,
-        '스키니핏' => 7.0,
-        '슬림핏' => 12.0,
-        '와이드핏' || 'A라인' => 31.0,
-        '오버핏' => 28.0,
-        '루즈핏' => 25.0,
-        '레귤러핏' => 18.0,
-        _ => 21.0,
-      };
-      path.moveTo(18, 8);
-      path.lineTo(82, 8);
-      path.lineTo(82 + (hem - 21) / 2, 101);
-      path.lineTo(52, 101);
-      path.lineTo(50, 43);
-      path.lineTo(48, 101);
-      path.lineTo(18 - (hem - 21) / 2, 101);
-      path.close();
-      if (fit == '스키니핏' || fit == '슬림핏' || fit == '테이퍼드핏') {
-        path.reset();
-        path.moveTo(20, 8);
-        path.lineTo(80, 8);
-        path.lineTo(68 + hem / 2, 101);
-        path.lineTo(68 - hem / 2, 101);
-        path.lineTo(50, 38);
-        path.lineTo(32 + hem / 2, 101);
-        path.lineTo(32 - hem / 2, 101);
-        path.close();
-      }
-    } else if (category == GarmentCategory.dresses ||
-        fit == 'A라인' ||
-        fit == 'H라인') {
-      final hem = fit == 'A라인'
-          ? 44.0
-          : fit == 'H라인'
-          ? 27.0
-          : width;
-      path.moveTo(33, 9);
-      path.quadraticBezierTo(50, 23, 67, 9);
-      path.lineTo(75, 34);
-      path.lineTo(65, 42);
-      path.lineTo(50 + hem, 102);
-      path.lineTo(50 - hem, 102);
-      path.lineTo(35, 42);
-      path.lineTo(25, 34);
-      path.close();
-    } else {
-      final shoulder = fit == '오버핏' ? 37.0 : width;
-      path.moveTo(38, 12);
-      path.quadraticBezierTo(50, 25, 62, 12);
-      path.lineTo(50 + shoulder, 24);
-      path.lineTo(97, 51);
-      path.lineTo(81, 61);
-      path.lineTo(50 + width, 48);
-      path.lineTo(50 + width, 100);
-      path.lineTo(50 - width, 100);
-      path.lineTo(50 - width, 48);
-      path.lineTo(19, 61);
-      path.lineTo(3, 51);
-      path.lineTo(50 - shoulder, 24);
-      path.close();
+    final pen = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeJoin = StrokeJoin.round;
+    void draw(Path path) {
+      canvas.drawPath(path, Paint()..color = color.withValues(alpha: 0.18));
+      canvas.drawPath(path, pen);
     }
-    canvas.drawPath(path, Paint()..color = color.withValues(alpha: 0.18));
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
-    );
+
+    switch (context) {
+      case FitContext.coat ||
+          FitContext.puffer ||
+          FitContext.jacket ||
+          FitContext.outerwear:
+        final coat = context == FitContext.coat;
+        final puffer = context == FitContext.puffer;
+        final bottom = coat ? 104.0 : 82.0;
+        final shoulder = fit == '오버핏' ? 32.0 : 26.0;
+        final hem = fit == 'A라인' ? 37.0 : _width;
+        final waist = fit == '슬림핏' ? 19.0 : _width;
+        final path = Path()
+          ..moveTo(40, 9)
+          ..lineTo(60, 9)
+          ..lineTo(50 + shoulder, 20)
+          ..lineTo(96, 73)
+          ..lineTo(83, 79)
+          ..lineTo(50 + shoulder, 43)
+          ..lineTo(50 + waist, 58)
+          ..lineTo(50 + hem, bottom)
+          ..lineTo(50 - hem, bottom)
+          ..lineTo(50 - waist, 58)
+          ..lineTo(50 - shoulder, 43)
+          ..lineTo(17, 79)
+          ..lineTo(4, 73)
+          ..lineTo(50 - shoulder, 20)
+          ..close();
+        draw(path);
+        // Lapels and buttons distinguish coats/blazers from a T-shirt.
+        final lapels =
+            coat ||
+            subtype.contains('블레이저') ||
+            subtype.contains('재킷') ||
+            subtype.contains('자켓');
+        if (lapels) {
+          canvas.drawPath(
+            Path()
+              ..moveTo(40, 9)
+              ..lineTo(35, 26)
+              ..lineTo(45, 36)
+              ..lineTo(50, 49)
+              ..lineTo(55, 36)
+              ..lineTo(65, 26)
+              ..lineTo(60, 9),
+            pen,
+          );
+          canvas.drawLine(const Offset(50, 49), Offset(50, bottom), pen);
+          for (double y = 57; y < bottom - 6; y += 15) {
+            canvas.drawCircle(Offset(55, y), 1.5, pen);
+          }
+        } else {
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(
+              const Rect.fromLTWH(40, 5, 20, 13),
+              const Radius.circular(4),
+            ),
+            pen,
+          );
+          canvas.drawLine(const Offset(50, 18), Offset(50, bottom), pen);
+        }
+        if (puffer) {
+          canvas.save();
+          canvas.clipPath(path);
+          for (double y = 27; y < bottom; y += 12) {
+            canvas.drawLine(Offset(5, y), Offset(95, y), pen);
+          }
+          canvas.restore();
+        } else {
+          canvas.drawLine(const Offset(26, 65), const Offset(37, 61), pen);
+          canvas.drawLine(const Offset(63, 61), const Offset(74, 65), pen);
+        }
+        if (coat && subtype.contains('트렌치')) {
+          canvas.drawLine(const Offset(27, 58), const Offset(73, 58), pen);
+          canvas.drawRect(const Rect.fromLTWH(46, 55, 8, 6), pen);
+        }
+      case FitContext.pants || FitContext.shorts || FitContext.leggings:
+        final bottom = context == FitContext.shorts ? 67.0 : 103.0;
+        draw(_pants(bottom));
+        canvas.drawLine(const Offset(21, 15), const Offset(79, 15), pen);
+        canvas.drawLine(const Offset(50, 15), const Offset(50, 35), pen);
+      case FitContext.skirt:
+        final hem = fit == 'A라인' ? 44.0 : 29.0;
+        draw(
+          Path()
+            ..moveTo(23, 9)
+            ..lineTo(77, 9)
+            ..lineTo(50 + hem, 103)
+            ..lineTo(50 - hem, 103)
+            ..close(),
+        );
+        canvas.drawLine(const Offset(23, 17), const Offset(77, 17), pen);
+      case FitContext.dress:
+        final hem = fit == 'A라인'
+            ? 44.0
+            : fit == 'H라인'
+            ? 27.0
+            : _width;
+        final waist = fit == '슬림핏' || fit == 'A라인' ? 17.0 : _width;
+        draw(
+          Path()
+            ..moveTo(34, 9)
+            ..quadraticBezierTo(50, 23, 66, 9)
+            ..lineTo(77, 31)
+            ..lineTo(66, 39)
+            ..lineTo(50 + waist, 45)
+            ..lineTo(50 + hem, 103)
+            ..lineTo(50 - hem, 103)
+            ..lineTo(50 - waist, 45)
+            ..lineTo(34, 39)
+            ..lineTo(23, 31)
+            ..close(),
+        );
+      case FitContext.jumpsuit:
+        final body = _width;
+        draw(
+          Path()
+            ..moveTo(35, 8)
+            ..quadraticBezierTo(50, 23, 65, 8)
+            ..lineTo(83, 24)
+            ..lineTo(73, 36)
+            ..lineTo(50 + body, 32)
+            ..lineTo(50 + body, 103)
+            ..lineTo(55, 103)
+            ..lineTo(50, 62)
+            ..lineTo(45, 103)
+            ..lineTo(50 - body, 103)
+            ..lineTo(50 - body, 32)
+            ..lineTo(27, 36)
+            ..lineTo(17, 24)
+            ..close(),
+        );
+        canvas.drawLine(Offset(50 - body, 48), Offset(50 + body, 48), pen);
+      case FitContext.set:
+        // Two separated pieces: illustrative composition, not a stored set type.
+        canvas.save();
+        canvas.scale(0.72, 0.43);
+        canvas.translate(19.5, 0);
+        draw(_top());
+        canvas.restore();
+        canvas.save();
+        canvas.translate(14, 54);
+        canvas.scale(0.72, 0.49);
+        draw(_pants(103));
+        canvas.restore();
+      case FitContext.tops:
+        draw(_top());
+      case FitContext.optional:
+        break;
+    }
     canvas.restore();
+  }
+
+  Path _top() {
+    final shoulder = fit == '오버핏' ? 36.0 : _width;
+    final sleeveless = subtype.contains('민소매');
+    final longSleeves =
+        ['긴팔', '셔츠', '니트', '맨투맨', '후드', '가디건'].any(subtype.contains) &&
+        !subtype.contains('반팔') &&
+        !subtype.contains('폴로');
+    return Path()
+      ..moveTo(38, 10)
+      ..quadraticBezierTo(50, 24, 62, 10)
+      ..lineTo(50 + shoulder, 22)
+      ..lineTo(
+        sleeveless ? 50 + _width : 97,
+        sleeveless
+            ? 44
+            : longSleeves
+            ? 78
+            : 48,
+      )
+      ..lineTo(
+        sleeveless ? 50 + _width : 82,
+        sleeveless
+            ? 44
+            : longSleeves
+            ? 84
+            : 58,
+      )
+      ..lineTo(50 + _width, 45)
+      ..lineTo(50 + _width, 101)
+      ..lineTo(50 - _width, 101)
+      ..lineTo(50 - _width, 45)
+      ..lineTo(
+        sleeveless ? 50 - _width : 18,
+        sleeveless
+            ? 44
+            : longSleeves
+            ? 84
+            : 58,
+      )
+      ..lineTo(
+        sleeveless ? 50 - _width : 3,
+        sleeveless
+            ? 44
+            : longSleeves
+            ? 78
+            : 48,
+      )
+      ..lineTo(50 - shoulder, 22)
+      ..close();
+  }
+
+  Path _pants(double bottom) {
+    final hem = switch (fit) {
+      '테이퍼드핏' => 7.0,
+      '스키니핏' => 6.0,
+      '슬림핏' => 9.0,
+      '와이드핏' => 17.0,
+      '루즈핏' => 15.0,
+      _ => 12.0,
+    };
+    return Path()
+      ..moveTo(21, 9)
+      ..lineTo(79, 9)
+      ..lineTo(68 + hem, bottom)
+      ..lineTo(68 - hem, bottom)
+      ..lineTo(50, 37)
+      ..lineTo(32 + hem, bottom)
+      ..lineTo(32 - hem, bottom)
+      ..close();
   }
 
   @override
   bool shouldRepaint(FitSilhouettePainter oldDelegate) =>
       fit != oldDelegate.fit ||
       category != oldDelegate.category ||
+      subtype != oldDelegate.subtype ||
       color != oldDelegate.color;
 }

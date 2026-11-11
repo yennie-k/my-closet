@@ -30,6 +30,10 @@ Future<void> type(WidgetTester tester, String label, String value) async {
   await tester.ensureVisible(finder);
   await tester.enterText(finder, value);
   await tester.pumpAndSettle();
+  if (label == '세부 종류 직접 입력') {
+    final apply = find.byKey(const ValueKey('apply-subtype'));
+    if (apply.evaluate().isNotEmpty) await tap(tester, apply);
+  }
 }
 
 Future<void> pumpEditor(
@@ -54,7 +58,7 @@ Future<void> pumpEditor(
 
 void main() {
   testWidgets(
-    'All category recommendations update without replacing custom subtype',
+    'Category changes confirm clearing incompatible custom drafts without changing original',
     (tester) async {
       final garment = Garment.fromJson(legacyMetadata());
       final repo = MemoryWardrobe();
@@ -62,10 +66,18 @@ void main() {
       for (final category in GarmentCategory.values) {
         await tap(tester, find.byKey(const ValueKey('category-field')));
         await tap(tester, find.text(category.label).last);
+        final confirm = find.byKey(
+          const ValueKey('confirm-classification-change'),
+        );
+        if (confirm.evaluate().isNotEmpty) await tap(tester, confirm);
         final field = tester.widget<TextFormField>(
           find.widgetWithText(TextFormField, '세부 종류 직접 입력'),
         );
-        expect(field.controller!.text, garment.subtype);
+        expect(
+          field.controller!.text,
+          category == GarmentCategory.tops ? garment.subtype : '',
+        );
+        expect(repo.items[garment.id]!.toJson(), garment.toJson());
         final suggestions = subtypeSuggestions[category]!;
         if (suggestions.isNotEmpty) {
           expect(

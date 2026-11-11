@@ -4,6 +4,8 @@ import '../models/garment.dart';
 import '../models/wardrobe_filters.dart';
 import '../services/garment_photo_service.dart';
 import '../services/wardrobe_repository.dart';
+import '../services/revisioned_wardrobe_repository.dart';
+import '../services/server_photo_repository.dart';
 import '../widgets/common.dart';
 import '../widgets/garment_photo.dart';
 import 'garment_detail_screen.dart';
@@ -17,6 +19,7 @@ class WardrobeScreen extends StatefulWidget {
   });
   final WardrobeRepository repository;
   final GarmentPhotoService photoService;
+  bool get metadataOnly => repository is MetadataOnlyWardrobeRepository;
   @override
   State<WardrobeScreen> createState() => _WardrobeScreenState();
 }
@@ -29,6 +32,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
   bool _loading = true;
   String? _error;
   final _search = TextEditingController();
+  int _request = 0;
   @override
   void initState() {
     super.initState();
@@ -42,13 +46,14 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
   }
 
   Future<void> _load() async {
+    final request = ++_request;
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
       final items = await widget.repository.list();
-      if (mounted) {
+      if (mounted && request == _request) {
         setState(() {
           _items = items;
           if (_subtype != null &&
@@ -61,9 +66,11 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
         });
       }
     } catch (e) {
-      if (mounted) setState(() => _error = wardrobeError(e));
+      if (mounted && request == _request) {
+        setState(() => _error = wardrobeError(e));
+      }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted && request == _request) setState(() => _loading = false);
     }
   }
 
@@ -77,7 +84,12 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
         ),
       ),
     );
-    if (!mounted || saved == null) return;
+    if (!mounted) return;
+    if (saved == null) {
+      // Metadata may have committed before a photo failure or cancelled form.
+      if (widget.repository is ServerPhotoRepository) await _load();
+      return;
+    }
     setState(() {
       _category = null;
       _subtype = null;
@@ -88,6 +100,16 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
   }
 
   Future<void> _open(Garment garment) async {
+    try {
+      final repository = widget.repository;
+      if (repository is RevisionedWardrobeRepository) {
+        garment = await repository.refresh(garment);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _error = wardrobeError(e));
+      return;
+    }
+    if (!mounted) return;
     await Navigator.push<void>(
       context,
       MaterialPageRoute(
@@ -169,10 +191,14 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const PageHeading(
-                    eyebrow: 'MY WARDROBE',
-                    title: '내 취향이 모이는 곳',
-                    description: '자주 입는 옷부터, 아껴 둔 한 벌까지. 나만의 옷장을 채워보세요.',
+                  PageHeading(
+                    eyebrow: widget.metadataOnly
+                        ? 'LOCAL SUPABASE · DEVELOPMENT'
+                        : 'MY WARDROBE',
+                    title: widget.metadataOnly ? '서버 개발 옷장' : '내 취향이 모이는 곳',
+                    description: widget.metadataOnly
+                        ? '이 기기의 내 옷장과 별개예요. 서버가 검증한 사진만 표시해요.'
+                        : '자주 입는 옷부터, 아껴 둔 한 벌까지. 나만의 옷장을 채워보세요.',
                   ),
                   const SizedBox(height: 24),
                   Wrap(
@@ -185,6 +211,13 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                         '전체 ${_items.length}벌',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
+                      if (widget.metadataOnly)
+                        OutlinedButton.icon(
+                          key: const ValueKey('refresh-server-wardrobe'),
+                          onPressed: _loading ? null : _load,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('서버 새로고침'),
+                        ),
                       FilledButton.icon(
                         key: const ValueKey('add-garment'),
                         onPressed: _loading || _error != null ? null : _add,
@@ -355,45 +388,53 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                   return Card(
                     clipBehavior: Clip.antiAlias,
                     margin: EdgeInsets.zero,
-                    child: InkWell(
-                      key: ValueKey('garment-${garment.id}'),
-                      onTap: () => _open(garment),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: GarmentPhoto(
-                              garment: garment,
-                              repository: widget.repository,
+                    child: Semantics(
+                      button: true,
+                      child: InkWell(
+                        key: ValueKey('garment-${garment.id}'),
+                        onTap: () => _open(garment),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child:
+                                  widget.metadataOnly &&
+                                      widget.repository
+                                          is! ServerPhotoRepository
+                                  ? const ServerPhotoPlaceholder()
+                                  : GarmentPhoto(
+                                      garment: garment,
+                                      repository: widget.repository,
+                                    ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  garment.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
+                            Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    garment.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  garment.category.label,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    garment.category.label,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );

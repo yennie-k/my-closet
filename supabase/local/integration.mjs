@@ -7,7 +7,7 @@ import { createHash, randomUUID, randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-export const LOCAL = 'C:\\Projects\\my_closet_supabase_local';
+export const LOCAL = resolve(ROOT, '..', 'my_closet_supabase_local');
 export const PROJECT = 'my_closet_supabase_local';
 export const DB = `supabase_db_${PROJECT}`;
 export const API = 'http://127.0.0.1:54321';
@@ -33,7 +33,7 @@ export function sqlRole(role, uid, text, commit = false) {
   return sql(`begin; set local role ${role}; set local request.jwt.claims=${lit(JSON.stringify(claims))};\n${text}\n${commit ? 'commit' : 'rollback'};`);
 }
 export function guard() {
-  assert.equal(resolve(LOCAL), 'C:\\Projects\\my_closet_supabase_local');
+  assert.equal(resolve(LOCAL), resolve(ROOT, '..', PROJECT));
   for (const name of ['DOCKER_HOST','DOCKER_CONTEXT','SUPABASE_WORKDIR','SUPABASE_ACCESS_TOKEN',
     'PGHOST','PGSERVICE','PGSERVICEFILE','DATABASE_URL']) assert(!process.env[name], `Unexpected environment: ${name}`);
   for (const root of [LOCAL, ROOT]) assert(!existsSync(join(root, 'supabase/.temp/project-ref')), 'Remote project link found; STOP');

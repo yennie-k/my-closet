@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-05",
+  "cloud": false,
+  "original_photo_read_or_copied": false,
+  "server": {
+    "passed": 3,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "2048-420.jpg",
+        "passed": true
+      },
+      {
+        "name": "png-rgb.png",
+        "passed": true
+      },
+      {
+        "name": "webp-lossless.webp",
+        "passed": true
+      }
+    ]
+  },
+  "preservation": [
+    {
+      "table": "public.garments",
+      "original": 85,
+      "current": 88,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "public.user_preferences",
+      "original": 2,
+      "current": 2,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "original": 58,
+      "current": 61,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "original": 3,
+      "current": 3,
+      "original_rows_unchanged": true
+    }
+  ],
+  "protected_files_unchanged": [
+    "supabase/drafts/01_database.draft.sql",
+    "supabase/drafts/02_storage_policies.draft.sql",
+    "supabase/functions/verify-garment-photo/index.ts",
+    "supabase/functions/verify-garment-photo/adapter.ts",
+    "supabase/functions/verify-garment-photo/core.ts",
+    "supabase/functions/verify-garment-photo/image.ts",
+    "supabase/functions/garment-photo-operations/index.ts",
+    "supabase/functions/garment-photo-operations/adapter.ts",
+    "supabase/functions/garment-photo-operations/core.ts",
+    "lib/services/storage/indexeddb_wardrobe_repository.dart",
+    "lib/models/garment.dart"
+  ]
+}

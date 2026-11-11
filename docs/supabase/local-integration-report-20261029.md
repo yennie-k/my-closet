@@ -8,8 +8,8 @@
 
 | 항목 | 실제 확인 결과 |
 | --- | --- |
-| Flutter 프로젝트 | `C:\Projects\my_closet` |
-| Supabase 테스트 프로젝트 | `C:\Projects\my_closet_supabase_local` |
+| Flutter 프로젝트 | `<PROJECT_ROOT>` |
+| Supabase 테스트 프로젝트 | `<LOCAL_SUPABASE_DIR>` |
 | CLI | 2.122.0, 설치된 실행 파일 직접 사용; 다운로드/업데이트 없음 |
 | API / DB | `http://127.0.0.1:54321` / `127.0.0.1:54322` |
 | DB 컨테이너 | `supabase_db_my_closet_supabase_local`, 호스트 54322 → 컨테이너 5432 |
@@ -29,11 +29,11 @@ API URL은 코드에서 numeric loopback으로 고정했고 다른 origin과 HTT
 
 빈 대상임을 확인한 뒤 `pg_dump --format=custom`으로 전체 DB 논리 백업을 생성했다. `pg_restore --list`로 백업 목차를 읽는 데 성공했다. **실제 restore는 실행하지 않았으므로 복원 성공을 검증한 것은 아니다.** 실행 전 Storage 객체가 0개였으므로 기존 파일 바이너리 백업 대상은 없었다.
 
-- 백업: `C:\Projects\my_closet\build\supabase-local\20261029-run1\before.dump`
+- 백업: `<PROJECT_ROOT>\build\supabase-local\20261029-run1\before.dump`
 - SHA-256: `763d96424e683cd36b59324b2f0206b2703a816f13dadc92f2dd85cbfca7704e`
 - 원상복구 주의 및 대상: 같은 폴더의 `RESTORE-REQUIRES-APPROVAL.txt`; 아래 복구 절차도 참고.
 
-`C:\Projects\my_closet_supabase_local\rehearsals\20261029-run1`에 원본과 바이트가 동일한 `01_database.local.sql`, `02_storage_policies.local.sql` 및 해시 manifest를 생성했다. 의존성을 확인한 뒤 직접 psql 리허설로 적용했으며 CLI migration history에 성공 기록을 임의로 삽입하지 않았다. 자동 실행되는 migrations 디렉터리에도 추가하지 않았다. 버킷 생성은 두 SQL 사이의 별도 API 단계다.
+`<LOCAL_SUPABASE_DIR>\rehearsals\20261029-run1`에 원본과 바이트가 동일한 `01_database.local.sql`, `02_storage_policies.local.sql` 및 해시 manifest를 생성했다. 의존성을 확인한 뒤 직접 psql 리허설로 적용했으며 CLI migration history에 성공 기록을 임의로 삽입하지 않았다. 자동 실행되는 migrations 디렉터리에도 추가하지 않았다. 버킷 생성은 두 SQL 사이의 별도 API 단계다.
 
 | 단계 | 실제 결과 |
 | --- | --- |

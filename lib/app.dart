@@ -10,6 +10,10 @@ import 'services/wardrobe_repository.dart';
 import 'services/garment_photo_service.dart';
 import 'services/storage/wardrobe_factory.dart';
 import 'theme/app_theme.dart';
+import 'services/auth_controller.dart';
+import 'services/server_wardrobe_reader.dart';
+import 'screens/server_wardrobe_test_screen.dart';
+import 'screens/server_wardrobe_screen.dart';
 
 class MyClosetApp extends StatefulWidget {
   const MyClosetApp({
@@ -17,10 +21,16 @@ class MyClosetApp extends StatefulWidget {
     required this.store,
     this.wardrobeRepository,
     this.photoService,
+    this.auth,
+    this.serverReader,
+    this.serverRepositoryFactory,
   });
   final PreferencesStore store;
   final WardrobeRepository? wardrobeRepository;
   final GarmentPhotoService? photoService;
+  final AuthController? auth;
+  final ServerWardrobeReader? serverReader;
+  final ServerRepositoryFactory? serverRepositoryFactory;
   @override
   State<MyClosetApp> createState() => _MyClosetAppState();
 }
@@ -78,6 +88,19 @@ class _MyClosetAppState extends State<MyClosetApp> {
     title: 'My Closet | 나다운 스타일의 시작',
     debugShowCheckedModeBanner: false,
     theme: buildAppTheme(_preferences.design),
+    routes: {
+      if (widget.auth != null && widget.serverRepositoryFactory != null)
+        '/dev/server-wardrobe-crud': (_) => ServerWardrobeScreen(
+          auth: widget.auth!,
+          repositoryFactory: widget.serverRepositoryFactory!,
+          photoService: _photos,
+        ),
+      if (widget.auth != null && widget.serverReader != null)
+        '/dev/server-wardrobe': (_) => ServerWardrobeTestScreen(
+          auth: widget.auth!,
+          reader: widget.serverReader!,
+        ),
+    },
     home: _loading
         ? const Scaffold(body: Center(child: CircularProgressIndicator()))
         : _loadFailed
@@ -99,6 +122,9 @@ class _MyClosetAppState extends State<MyClosetApp> {
             onSave: _save,
             wardrobeRepository: _wardrobe,
             photoService: _photos,
+            auth: widget.auth,
+            serverReader: widget.serverReader,
+            serverCrudEnabled: widget.serverRepositoryFactory != null,
           )
         : OnboardingScreen(
             preferences: _preferences,

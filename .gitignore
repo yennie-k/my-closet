@@ -49,3 +49,30 @@ app.*.map.json
 
 # Local Flutter engine test workaround
 /.test_temp/
+
+# Per-machine local development client settings (publishable key only).
+/config/supabase.local.json
+/config/supabase.crud.local.json
+
+# Per-machine secrets, credentials, database exports and private runtime data.
+.env
+.env.*
+!.env.example
+!.env.template
+/config/*.local.json
+*.pem
+*.key
+*.dump
+*.backup
+*.bak
+*.sqlite
+*.sqlite3
+*.db
+/backups/
+/local-data/
+/supabase/.temp/
+/supabase/.branches/
+/supabase/functions/.env*
+
+# Private, individual user-photo diagnostic fingerprints (not a fixture).
+/docs/supabase/jpeg-restart-results-20261109.json

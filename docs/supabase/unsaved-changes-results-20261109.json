@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-09",
+  "scope": "shared wardrobe editor unsaved changes guard",
+  "files_changed_this_task": [
+    "lib/screens/garment_editor_screen.dart",
+    "lib/screens/server_wardrobe_screen.dart",
+    "lib/widgets/garment_input_fields.dart",
+    "lib/widgets/editor_exit_scope.dart",
+    "lib/widgets/browser_exit_guard.dart",
+    "lib/widgets/browser_exit_guard_stub.dart",
+    "lib/widgets/browser_exit_guard_web.dart",
+    "test/unsaved_changes_test.dart",
+    "test/server_photo_test.dart",
+    "test/garment_classification_change_test.dart",
+    "tool/unsaved_guard_app.dart",
+    "scripts/unsaved_guard_browser_test.mjs",
+    "scripts/browser_test_driver.mjs",
+    "README.md",
+    "docs/supabase/unsaved-changes-guard-20261109.md",
+    "docs/supabase/unsaved-changes-results-20261109.json"
+  ],
+  "validation": {
+    "sequential_execution": true,
+    "flutter_analyze": "No issues found",
+    "flutter_test": { "passed": 166, "failed": 0, "existing": 141, "new": 25 },
+    "edge_probe": {
+      "passed": 10, "failed": 0, "isolated_profile": true,
+      "port": 8082, "storage": "synthetic process memory only",
+      "native_dialog_events_observed": ["Page.reload", "Page.navigateToHistoryEntry to previous document", "Page.close"],
+      "native_attempts_cancelled_and_input_retained": true,
+      "listener_removed_on_reversion_and_discard": true,
+      "clean_reload_completed": true
+    },
+    "probe_web_build": { "exit_code": 0, "output": "build/web_guard_probe" },
+    "default_web_build": { "exit_code": 0, "output": "build/web" },
+    "development_web_build": { "exit_code": 0, "output": "build/web_photos" },
+    "node_syntax_checks": "passed",
+    "git_diff_check": "passed",
+    "protected_sources": { "compared": 34, "changed": 0 }
+  },
+  "dirty_detection": {
+    "baseline": "initial editor state, memory only",
+    "fields": ["name", "category", "applied and pending subtype", "primary and additional colors", "pending custom color", "seasons", "thickness", "style tags", "materials", "pending custom material", "fit", "notes", "existing photo flag", "selected photo fingerprint"],
+    "multi_select_order_significant": false,
+    "focus_or_selection_counts_as_change": false,
+    "reverted_final_state_counts_as_change": false,
+    "original_photos_read_for_comparison": false,
+    "snapshot_persisted_or_logged": false
+  },
+  "navigation": {
+    "appbar_back": "guarded",
+    "flutter_system_back_and_maybePop": "guarded; simulated in widget tests",
+    "server_outer_exit_and_user_logout": "guarded",
+    "browser_document_exit": "browser-native beforeunload warning when allowed by browser",
+    "save_success": "allow exit only after all save work completes",
+    "save_failure": "keep draft and guard",
+    "partial_metadata_save_with_failed_photo": "keep guard; previously committed metadata is not rolled back",
+    "forced_auth_change": "security disposal remains immediate; fresh Navigator per user/session",
+    "arbitrary_forced_route_removal": "not guaranteed"
+  },
+  "resolved_during_testing": [
+    "existing pageBack tests now explicitly choose discard",
+    "desktop sidebar test needed actual desktop view/MediaQuery configuration",
+    "transient empty-field accessibility label in browser probe resolved by typing through the already focused input",
+    "account transition initially reused Navigator GlobalKey; isolated by user ID/session generation and regression tested with dirty editor"
+  ],
+  "protection": {
+    "real_user_indexeddb_or_server_data_accessed_or_written": false,
+    "real_photos_accessed_or_uploaded": false,
+    "database_or_storage_api_calls": 0,
+    "model_v2_dto_revision_or_photo_processing_changed": false,
+    "category_reset_rules_changed": false,
+    "sql_rls_storage_policies_or_edge_functions_changed": false,
+    "automatic_draft_persistence_or_bulk_migration": false,
+    "cloud_project_connection_or_deployment": false,
+    "git_commit_or_push": false
+  },
+  "limitations": [
+    "browser controls native dialog wording and whether it appears; user activation is generally required",
+    "mobile OS termination, crashes and forced browser termination cannot be guaranteed",
+    "physical Android/iOS and other browsers were not exercised",
+    "real Supabase HTTP/RLS/Storage integration not rerun; existing service/widget doubles used",
+    "Edge used the actual shared editor with synthetic memory repository, not the user's existing app data"
+  ]
+}

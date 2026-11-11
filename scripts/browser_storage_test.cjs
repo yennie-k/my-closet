@@ -5,7 +5,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { spawn } = require('node:child_process');
 const root = path.resolve(__dirname, '..', 'build', 'storage_probe');
-const chrome = process.env.CHROME_EXECUTABLE || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const chrome = process.env.CHROME_EXECUTABLE || path.join(process.env.PROGRAMFILES || '', 'Google/Chrome/Application/chrome.exe');
 const profile = fs.mkdtempSync(path.join(root, 'chrome-profile-'));
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const server = http.createServer((req, res) => {

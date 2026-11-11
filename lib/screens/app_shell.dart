@@ -8,6 +8,8 @@ import 'upcoming_screen.dart';
 import 'wardrobe_screen.dart';
 import '../services/wardrobe_repository.dart';
 import '../services/garment_photo_service.dart';
+import '../services/auth_controller.dart';
+import '../services/server_wardrobe_reader.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -16,11 +18,17 @@ class AppShell extends StatefulWidget {
     required this.onSave,
     required this.wardrobeRepository,
     required this.photoService,
+    this.auth,
+    this.serverReader,
+    this.serverCrudEnabled = false,
   });
   final UserPreferences preferences;
   final Future<void> Function(UserPreferences) onSave;
   final WardrobeRepository wardrobeRepository;
   final GarmentPhotoService photoService;
+  final AuthController? auth;
+  final ServerWardrobeReader? serverReader;
+  final bool serverCrudEnabled;
   @override
   State<AppShell> createState() => _AppShellState();
 }
@@ -72,7 +80,13 @@ class _AppShellState extends State<AppShell> {
           feature: '코디 기록',
           detail: '오늘 입은 코디를 저장하고 날짜별로 돌아보는 기능을 준비 중이에요.',
         ),
-        ProfileScreen(preferences: widget.preferences, onSave: widget.onSave),
+        ProfileScreen(
+          preferences: widget.preferences,
+          onSave: widget.onSave,
+          auth: widget.auth,
+          serverReader: widget.serverReader,
+          serverCrudEnabled: widget.serverCrudEnabled,
+        ),
       ];
       return Scaffold(
         appBar: desktop

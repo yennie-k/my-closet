@@ -1,0 +1,258 @@
+{
+  "date": "2026-11-02",
+  "api": "http://127.0.0.1:54321",
+  "db": "127.0.0.1:54322",
+  "web": "http://localhost:8081",
+  "reproduction_before_fix": {
+    "passed": 0,
+    "failed": 1,
+    "expected_failure": true,
+    "description": "Server storage with omitted presentation flag displayed the exact generic photo validation message despite valid name/category."
+  },
+  "user_prior_browser_state_confirmed": false,
+  "reason": "No existing 8081 server/process was running during inspection; prior user path/input values could not be reconstructed.",
+  "flutter_tests": {
+    "passed": 75,
+    "failed": 0
+  },
+  "flutter_analyze": "passed",
+  "default_web_build": "passed",
+  "crud_web_build": "passed",
+  "repository": {
+    "passed": 19,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "A create without Storage and full v2 roundtrip",
+        "passed": true
+      },
+      {
+        "name": "A metadata update uses original revision and preserves all other fields",
+        "passed": true
+      },
+      {
+        "name": "B cannot read update or delete A through actual RLS",
+        "passed": true
+      },
+      {
+        "name": "anon SELECT denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "anon INSERT denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "anon UPDATE denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "anon DELETE denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "stale editor stays stale even after list refresh; no automatic overwrite",
+        "passed": true
+      },
+      {
+        "name": "two real concurrent updates yield one success and one conflict",
+        "passed": true
+      },
+      {
+        "name": "missing row is reported as deleted OR inaccessible without privileged probe",
+        "passed": true
+      },
+      {
+        "name": "simultaneous duplicate creates and sequential retry create exactly one row",
+        "passed": true
+      },
+      {
+        "name": "changed duplicate create refuses to merge or overwrite",
+        "passed": true
+      },
+      {
+        "name": "lost INSERT response after actual commit is safely retried",
+        "passed": true
+      },
+      {
+        "name": "network failure and recovery differ from permission denial",
+        "passed": true
+      },
+      {
+        "name": "legacy material empty array and custom HEX survive unrelated edits",
+        "passed": true
+      },
+      {
+        "name": "stale delete conflicts; refreshed delete removes only exact row",
+        "passed": true
+      },
+      {
+        "name": "late query response after session change is discarded; old repo unusable",
+        "passed": true
+      },
+      {
+        "name": "unauthenticated repository CRUD rejected before requests",
+        "passed": true
+      },
+      {
+        "name": "user_id spoofing and forbidden photo fact updates remain denied",
+        "passed": true
+      }
+    ]
+  },
+  "browser": {
+    "passed": 19,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "unauthenticated_server_ui_gated",
+        "passed": true
+      },
+      {
+        "name": "A_login_server_list",
+        "passed": true
+      },
+      {
+        "name": "no_photo_picker_in_server_form",
+        "passed": true
+      },
+      {
+        "name": "A_create_without_photo",
+        "passed": true
+      },
+      {
+        "name": "category_subtype_search_combined",
+        "passed": true
+      },
+      {
+        "name": "detail_read",
+        "passed": true
+      },
+      {
+        "name": "A_update",
+        "passed": true
+      },
+      {
+        "name": "actual_reload_reads_persisted_server_row",
+        "passed": true
+      },
+      {
+        "name": "revision_conflict_notice_keeps_editor",
+        "passed": true
+      },
+      {
+        "name": "conflict_did_not_overwrite_server",
+        "passed": true
+      },
+      {
+        "name": "network_error_visible",
+        "passed": true
+      },
+      {
+        "name": "network_recovery_refresh",
+        "passed": true
+      },
+      {
+        "name": "logout_removes_open_editor_and_previous_data",
+        "passed": true
+      },
+      {
+        "name": "account_B_has_no_A_row",
+        "passed": true
+      },
+      {
+        "name": "mobile_server_layout_no_document_overflow",
+        "passed": true
+      },
+      {
+        "name": "delete_cancel_preserves_row",
+        "passed": true
+      },
+      {
+        "name": "A_delete_confirmed",
+        "passed": true
+      },
+      {
+        "name": "deleted_row_absent_in_actual_server",
+        "passed": true
+      },
+      {
+        "name": "synthetic_local_metadata_photo_and_theme_unchanged",
+        "passed": true
+      }
+    ],
+    "origin": "http://localhost:8081",
+    "isolated_profile": true
+  },
+  "auth": {
+    "passed": 7,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "wrong_password_rejected",
+        "passed": true
+      },
+      {
+        "name": "password_login",
+        "passed": true
+      },
+      {
+        "name": "jwt_algorithm_es256",
+        "passed": true
+      },
+      {
+        "name": "verified_get_user",
+        "passed": true
+      },
+      {
+        "name": "local_session_logout",
+        "passed": true
+      },
+      {
+        "name": "refresh_after_logout_rejected",
+        "passed": true
+      },
+      {
+        "name": "weak_signup_rejected",
+        "passed": true
+      }
+    ]
+  },
+  "indexeddb_browser_regression": "passed",
+  "preservation": [
+    {
+      "table": "public.garments",
+      "before": 60,
+      "after": 64,
+      "existing_rows_unchanged": true
+    },
+    {
+      "table": "public.user_preferences",
+      "before": 2,
+      "after": 2,
+      "existing_rows_unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "before": 35,
+      "after": 35,
+      "existing_rows_unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "before": 3,
+      "after": 3,
+      "existing_rows_unchanged": true
+    },
+    {
+      "table": "auth.users",
+      "before": 15,
+      "after": 17,
+      "existing_rows_unchanged": true
+    }
+  ],
+  "sql_storage_worker_changes": false,
+  "original_8080_browser_opened": false,
+  "cloud_connection": false,
+  "git_commit_push": false
+}

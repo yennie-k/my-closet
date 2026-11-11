@@ -1,0 +1,184 @@
+{
+  "date": "2026-10-29",
+  "api": "http://127.0.0.1:54321",
+  "db": "127.0.0.1:54322",
+  "cloud_connection": false,
+  "sql_schema_changes": false,
+  "local_wardrobe_repository_changed": false,
+  "flutter": "3.47.8",
+  "dart": "3.13.7",
+  "supabase_flutter": "2.18.3",
+  "cli": "2.122.0",
+  "api_checks": [
+    {
+      "name": "signup_a",
+      "passed": true
+    },
+    {
+      "name": "es256_a",
+      "passed": true
+    },
+    {
+      "name": "signup_b",
+      "passed": true
+    },
+    {
+      "name": "es256_b",
+      "passed": true
+    },
+    {
+      "name": "weak_password_rejected",
+      "passed": true
+    },
+    {
+      "name": "wrong_password_rejected",
+      "passed": true
+    },
+    {
+      "name": "password_login",
+      "passed": true
+    },
+    {
+      "name": "own_read_a",
+      "passed": true
+    },
+    {
+      "name": "cross_user_read_a_empty",
+      "passed": true
+    },
+    {
+      "name": "own_read_b",
+      "passed": true
+    },
+    {
+      "name": "cross_user_read_b_empty",
+      "passed": true
+    },
+    {
+      "name": "anonymous_read_denied",
+      "passed": true
+    },
+    {
+      "name": "auth_get_user_validates_jwt",
+      "passed": true
+    },
+    {
+      "name": "logout",
+      "passed": true
+    },
+    {
+      "name": "logged_out_refresh_token_rejected",
+      "passed": true
+    }
+  ],
+  "browser_checks": [
+    {
+      "name": "profile_signed_out",
+      "passed": true
+    },
+    {
+      "name": "server_route_requires_login",
+      "passed": true
+    },
+    {
+      "name": "ui_wrong_password",
+      "passed": true
+    },
+    {
+      "name": "ui_login_and_own_server_read",
+      "passed": true
+    },
+    {
+      "name": "foreign_garment_not_rendered",
+      "passed": true
+    },
+    {
+      "name": "actual_reload_restores_session_and_server_read",
+      "passed": true
+    },
+    {
+      "name": "browser_clock_expired_session_uses_real_refresh_api",
+      "passed": true
+    },
+    {
+      "name": "logout_removes_server_rows",
+      "passed": true
+    },
+    {
+      "name": "logout_removes_persisted_session",
+      "passed": true
+    },
+    {
+      "name": "reload_after_logout_stays_signed_out",
+      "passed": true
+    },
+    {
+      "name": "ui_signup_validation_failure",
+      "passed": true
+    },
+    {
+      "name": "ui_signup_success_no_local_auto_upload",
+      "passed": true
+    },
+    {
+      "name": "mobile_auth_layout_no_document_overflow",
+      "passed": true
+    },
+    {
+      "name": "synthetic_indexeddb_metadata_photo_and_preferences_unchanged",
+      "passed": true
+    }
+  ],
+  "api_passed": 15,
+  "browser_passed": 14,
+  "preservation": [
+    {
+      "table": "public.garments",
+      "original": 42,
+      "current": 44,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "public.user_preferences",
+      "original": 2,
+      "current": 2,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "original": 35,
+      "current": 35,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "original": 3,
+      "current": 3,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "auth.users",
+      "original": 8,
+      "current": 12,
+      "original_rows_unchanged": true
+    }
+  ],
+  "no_existing_browser_profile_used": true,
+  "web_origin": "http://localhost:8081",
+  "flutter_tests": {
+    "passed": 61,
+    "failed": 0
+  },
+  "flutter_analyze": "passed",
+  "default_web_build": "passed",
+  "development_web_build": "passed",
+  "indexeddb_browser_regression": "passed: legacy read + two real reloads + v2 metadata/photo persistence",
+  "limitations": [
+    "Browser clock was advanced only in the isolated test page to force real refresh; no natural one-hour wait",
+    "Local email confirmations are disabled: email-confirmation delivery/callback flow not implemented or end-to-end tested",
+    "No Android/iOS/native Windows authentication runtime test",
+    "Existing SQL 29/33 suites and Edge worker suites not rerun in this Flutter-only change",
+    "Server photo download and all server garment/photo mutations and migration remain out of scope",
+    "Local logout removes this browser session; already issued access JWTs remain valid until expiry"
+  ]
+}

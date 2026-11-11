@@ -1,0 +1,450 @@
+{
+  "date": "2026-11-02",
+  "targets": {
+    "api": "http://127.0.0.1:54321",
+    "db": "127.0.0.1:54322",
+    "web": "http://localhost:8081"
+  },
+  "cloud_connected": false,
+  "sql_policy_original_worker_changed": false,
+  "git_commit_push": false,
+  "real_browser_8080_opened": false,
+  "photo_http": {
+    "passed": 16,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "CORS allows 8081 preflight and rejects other origins",
+        "passed": true
+      },
+      {
+        "name": "unauthenticated operations denied",
+        "passed": true
+      },
+      {
+        "name": "actual jpg upload and original verifier ready",
+        "passed": true
+      },
+      {
+        "name": "actual png upload and original verifier ready",
+        "passed": true
+      },
+      {
+        "name": "actual webp upload and original verifier ready",
+        "passed": true
+      },
+      {
+        "name": "authenticated bytes correct; other user download and reservation denied",
+        "passed": true
+      },
+      {
+        "name": "client cannot reserve paths or set ready directly",
+        "passed": true
+      },
+      {
+        "name": "replacement succeeds; prior approved image remains protected",
+        "passed": true
+      },
+      {
+        "name": "next replacement and cleanup blocked during 25-hour grace",
+        "passed": true
+      },
+      {
+        "name": "failed verification preserves previous approved photo; cancelled candidate removed safely",
+        "passed": true
+      },
+      {
+        "name": "non-image content rejected by original worker",
+        "passed": true
+      },
+      {
+        "name": "oversize reservation and actual >2MiB Storage upload rejected",
+        "passed": true
+      },
+      {
+        "name": "more than 4 million pixels rejected by original decoder",
+        "passed": true
+      },
+      {
+        "name": "duplicate reserve, lost upload response retry and verification idempotent",
+        "passed": true
+      },
+      {
+        "name": "photo removal schedules retirement without deleting protected bytes",
+        "passed": true
+      },
+      {
+        "name": "due cleanup uses real Storage policy and clears slot (fixture clock simulation)",
+        "passed": true
+      }
+    ],
+    "new_fixture_ids": [
+      "55eaa28d-31ca-481f-98bc-acf061e42e38",
+      "5bb30bfc-558d-4544-8863-9b53858d5256",
+      "305d71c4-29c3-4cb4-9388-1e69b56de995",
+      "701c8222-aa2f-4779-9a3b-52484620ef47",
+      "30c43e8a-72ce-48ab-a401-a45902e3ed64",
+      "c35cd89c-d022-427d-b1f5-08850d5230e8",
+      "cd6f1300-1eb0-4c6a-8b41-207bf6cce983"
+    ]
+  },
+  "photo_dart": {
+    "passed": 9,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "Dart repository uploads and verifies real JPEG through original worker",
+        "passed": true
+      },
+      {
+        "name": "identical photo retry is idempotent and creates no retired slot",
+        "passed": true
+      },
+      {
+        "name": "Dart replacement returns new attested PNG and keeps old photo protected",
+        "passed": true
+      },
+      {
+        "name": "new replacement while cleanup pending is a clear safe rejection",
+        "passed": true
+      },
+      {
+        "name": "failed upload preserves active photo and retry resumes exact reservation",
+        "passed": true
+      },
+      {
+        "name": "lost successful Storage response retries without overwrite or duplicate",
+        "passed": true
+      },
+      {
+        "name": "photo-linked garment deletion remains blocked",
+        "passed": true
+      },
+      {
+        "name": "parallel same-photo requests converge without overwrites",
+        "passed": true
+      },
+      {
+        "name": "session boundary rejects cached image access after logout/account change",
+        "passed": true
+      }
+    ]
+  },
+  "photo_edge": {
+    "browser": "Edge",
+    "passed": 16,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "real_user_login",
+        "passed": true
+      },
+      {
+        "name": "invalid_file_rejected_in_UI",
+        "passed": true
+      },
+      {
+        "name": "synthetic_selection_and_preview",
+        "passed": true
+      },
+      {
+        "name": "UI_upload_and_verified_card",
+        "passed": true
+      },
+      {
+        "name": "server_ready_attestation_confirmed",
+        "passed": true
+      },
+      {
+        "name": "actual_reload_keeps_authenticated_photo",
+        "passed": true
+      },
+      {
+        "name": "verified_detail",
+        "passed": true
+      },
+      {
+        "name": "replacement_active_and_retired_paths",
+        "passed": true
+      },
+      {
+        "name": "replacement_rejection_keeps_prior_active",
+        "passed": true
+      },
+      {
+        "name": "logout_removes_photo_and_editor",
+        "passed": true
+      },
+      {
+        "name": "other_user_no_previous_photo",
+        "passed": true
+      },
+      {
+        "name": "browser_other_user_download_denied",
+        "passed": true
+      },
+      {
+        "name": "relogin_restores_only_own_verified_photo",
+        "passed": true
+      },
+      {
+        "name": "mobile_photo_detail_no_horizontal_overflow",
+        "passed": true
+      },
+      {
+        "name": "photo_removal_scheduled_in_UI",
+        "passed": true
+      },
+      {
+        "name": "garment_delete_respects_photo_grace",
+        "passed": true
+      }
+    ],
+    "origin": "http://localhost:8081",
+    "isolated_profile": true
+  },
+  "crud_dart": {
+    "passed": 19,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "A create without Storage and full v2 roundtrip",
+        "passed": true
+      },
+      {
+        "name": "A metadata update uses original revision and preserves all other fields",
+        "passed": true
+      },
+      {
+        "name": "B cannot read update or delete A through actual RLS",
+        "passed": true
+      },
+      {
+        "name": "anon SELECT denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "anon INSERT denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "anon UPDATE denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "anon DELETE denied by actual GRANT/RLS",
+        "passed": true
+      },
+      {
+        "name": "stale editor stays stale even after list refresh; no automatic overwrite",
+        "passed": true
+      },
+      {
+        "name": "two real concurrent updates yield one success and one conflict",
+        "passed": true
+      },
+      {
+        "name": "missing row is reported as deleted OR inaccessible without privileged probe",
+        "passed": true
+      },
+      {
+        "name": "simultaneous duplicate creates and sequential retry create exactly one row",
+        "passed": true
+      },
+      {
+        "name": "changed duplicate create refuses to merge or overwrite",
+        "passed": true
+      },
+      {
+        "name": "lost INSERT response after actual commit is safely retried",
+        "passed": true
+      },
+      {
+        "name": "network failure and recovery differ from permission denial",
+        "passed": true
+      },
+      {
+        "name": "legacy material empty array and custom HEX survive unrelated edits",
+        "passed": true
+      },
+      {
+        "name": "stale delete conflicts; refreshed delete removes only exact row",
+        "passed": true
+      },
+      {
+        "name": "late query response after session change is discarded; old repo unusable",
+        "passed": true
+      },
+      {
+        "name": "unauthenticated repository CRUD rejected before requests",
+        "passed": true
+      },
+      {
+        "name": "user_id spoofing and forbidden photo fact updates remain denied",
+        "passed": true
+      }
+    ]
+  },
+  "crud_edge": {
+    "passed": 19,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "unauthenticated_server_ui_gated",
+        "passed": true
+      },
+      {
+        "name": "A_login_server_list",
+        "passed": true
+      },
+      {
+        "name": "photo_is_optional_in_server_form",
+        "passed": true
+      },
+      {
+        "name": "A_create_without_photo",
+        "passed": true
+      },
+      {
+        "name": "category_subtype_search_combined",
+        "passed": true
+      },
+      {
+        "name": "detail_read",
+        "passed": true
+      },
+      {
+        "name": "A_update",
+        "passed": true
+      },
+      {
+        "name": "actual_reload_reads_persisted_server_row",
+        "passed": true
+      },
+      {
+        "name": "revision_conflict_notice_keeps_editor",
+        "passed": true
+      },
+      {
+        "name": "conflict_did_not_overwrite_server",
+        "passed": true
+      },
+      {
+        "name": "network_error_visible",
+        "passed": true
+      },
+      {
+        "name": "network_recovery_refresh",
+        "passed": true
+      },
+      {
+        "name": "logout_removes_open_editor_and_previous_data",
+        "passed": true
+      },
+      {
+        "name": "account_B_has_no_A_row",
+        "passed": true
+      },
+      {
+        "name": "mobile_server_layout_no_document_overflow",
+        "passed": true
+      },
+      {
+        "name": "delete_cancel_preserves_row",
+        "passed": true
+      },
+      {
+        "name": "A_delete_confirmed",
+        "passed": true
+      },
+      {
+        "name": "deleted_row_absent_in_actual_server",
+        "passed": true
+      },
+      {
+        "name": "synthetic_local_metadata_photo_and_theme_unchanged",
+        "passed": true
+      }
+    ],
+    "origin": "http://localhost:8081",
+    "isolated_profile": true
+  },
+  "cleanup_then_delete": {
+    "passed": 1,
+    "failed": 0,
+    "check": "After actual Storage cleanup, owner revision-CAS garment deletion succeeds; only this run synthetic WebP row deleted."
+  },
+  "anonymous_photo_download": {
+    "passed": 2,
+    "failed": 0
+  },
+  "flutter": {
+    "analyze": "passed",
+    "test_passed": 82,
+    "test_failed": 0,
+    "default_web_build": "passed",
+    "photo_dev_web_build": "passed"
+  },
+  "node_core": {
+    "new_operations": 15,
+    "unchanged_worker": 24,
+    "failed": 0
+  },
+  "indexeddb_probe": "passed; isolated synthetic profile/database, two reloads and legacy read without rewrite",
+  "preservation": [
+    {
+      "table": "public.garments",
+      "original_rows": 65,
+      "current_rows": 85,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "public.user_preferences",
+      "original_rows": 2,
+      "current_rows": 2,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "original_rows": 35,
+      "current_rows": 57,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "original_rows": 3,
+      "current_rows": 3,
+      "original_rows_unchanged": true
+    }
+  ],
+  "protected_sources_unchanged": [
+    "supabase/drafts/01_database.draft.sql",
+    "supabase/drafts/02_storage_policies.draft.sql",
+    "supabase/functions/verify-garment-photo/index.ts",
+    "supabase/functions/verify-garment-photo/adapter.ts",
+    "supabase/functions/verify-garment-photo/core.ts",
+    "supabase/functions/verify-garment-photo/image.ts",
+    "lib/services/storage/indexeddb_wardrobe_repository.dart",
+    "lib/models/garment.dart"
+  ],
+  "local_original_worker_matches": true,
+  "bucket": {
+    "private": true,
+    "file_size_limit": 2097152,
+    "allowed_mime_types": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ]
+  },
+  "intentional_denials": "Foreign/anonymous access, oversized/invalid images, stale revision, protected deletion, cooldown, failed upload and lost response are asserted rejections, not failed tests.",
+  "limitations": [
+    "The natural 25-hour wait was not performed; due cleanup used only this run's new synthetic row with a simulated expired timestamp.",
+    "No automatic cleanup scheduler, per-user quota, rate limiter or cloud deployment.",
+    "Original file metadata was compared; original Storage bytes and the real 8080 IndexedDB were not opened/downloaded.",
+    "Old historical 29/33 runner was not rerun: it creates control policies and requires fresh fixtures. Current Dart RLS/CRUD, actual photo Storage HTTP and unchanged worker core regressions passed.",
+    "Browser checks used an isolated headless Edge desktop and 360px viewport; physical phones, Safari and assistive technology were not tested.",
+    "Supabase local gateway answered OPTIONS with broad CORS headers; authenticated POST still enforces the local origin allowlist, Auth ownership and existing RLS.",
+    "Storage and metadata commits are separate; partial save remains visible and retries keep the same garment/reservation."
+  ]
+}

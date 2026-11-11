@@ -3,15 +3,24 @@ import 'package:flutter/material.dart';
 import '../models/user_preferences.dart';
 import '../widgets/common.dart';
 import '../widgets/preference_fields.dart';
+import '../services/auth_controller.dart';
+import '../services/server_wardrobe_reader.dart';
+import '../widgets/auth_account_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
     super.key,
     required this.preferences,
     required this.onSave,
+    this.auth,
+    this.serverReader,
+    this.serverCrudEnabled = false,
   });
   final UserPreferences preferences;
   final Future<void> Function(UserPreferences) onSave;
+  final AuthController? auth;
+  final ServerWardrobeReader? serverReader;
+  final bool serverCrudEnabled;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -68,6 +77,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         description: '지금의 나에게 맞게, 나만의 옷장을 다시 꾸며보세요.',
       ),
       const SizedBox(height: 32),
+      if (widget.auth != null) ...[
+        AuthAccountCard(
+          auth: widget.auth!,
+          reader: widget.serverReader,
+          serverCrudEnabled: widget.serverCrudEnabled,
+        ),
+        const SizedBox(height: 32),
+      ],
       _title('01', '앱 디자인', '세 가지 분위기 중 마음에 드는 디자인을 골라보세요.'),
       const SizedBox(height: 16),
       AbsorbPointer(

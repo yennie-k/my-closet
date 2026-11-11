@@ -1,4 +1,6 @@
-# 검토용 보안 테스트 — 아직 실행하지 않음
+# Supabase 보안·사진 테스트
+
+현재 Portfolio MVP 1.0의 실행 결과는 [최종 검증 보고서](../../docs/validation/portfolio-mvp-1.0-20261112.md)를 참고하세요. `photo_worker.test.ts`와 `photo_operations.test.ts`는 네트워크 없는 단위/계약 테스트입니다. 아래 SQL/HTTP 설명은 초기 초안 작성 당시의 기록이며, worker·예약 작업 구현 이후의 범위와 구분해야 합니다. 이번 최종 점검에서 SQL을 서버에 실행하거나 HTTP 통합 테스트를 재실행하지 않습니다.
 
 이 디렉터리의 SQL/HTTP 스크립트는 실제 서버에 실행하지 않았습니다. [보완 리뷰](../../docs/supabase/sql-review-20261027.md)의 미검증 항목과 release gate를 먼저 확인하세요.
 

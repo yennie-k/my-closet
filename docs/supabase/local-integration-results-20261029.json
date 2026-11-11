@@ -3,7 +3,7 @@
   "run": "20261029-run1",
   "api": "http://127.0.0.1:54321",
   "db": "127.0.0.1:54322",
-  "local_project": "C:\\Projects\\my_closet_supabase_local",
+  "local_project": "<LOCAL_SUPABASE_DIR>",
   "cloud_connected": false,
   "cli": "2.122.0",
   "postgres": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
@@ -106,7 +106,7 @@
       }
     ],
     "backup": {
-      "path": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-run1\\before.dump",
+      "path": "<PROJECT_ROOT>\\build\\supabase-local\\20261029-run1\\before.dump",
       "sha256": "763d96424e683cd36b59324b2f0206b2703a816f13dadc92f2dd85cbfca7704e",
       "toc_valid": true,
       "physical_storage_backup_needed": false

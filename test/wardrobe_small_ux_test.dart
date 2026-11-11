@@ -283,7 +283,7 @@ void main() {
     },
   );
   testWidgets(
-    'Changing subtype updates skirt fits; irrelevant categories keep custom fit optional',
+    'Changing subtype and category confirms clearing incompatible custom fit drafts',
     (tester) async {
       final garment = Garment.fromJson({
         ...testGarment(
@@ -318,20 +318,30 @@ void main() {
       await tester.ensureVisible(subtype);
       await tester.enterText(subtype, '미니스커트');
       await tester.pumpAndSettle();
+      await tap(tester, find.byKey(const ValueKey('apply-subtype')));
+      await tap(
+        tester,
+        find.byKey(const ValueKey('confirm-classification-change')),
+      );
       expect(find.byKey(const ValueKey('fit-스키니핏')), findsNothing);
       expect(find.byKey(const ValueKey('fit-A라인')), findsOneWidget);
       await tap(tester, find.byKey(const ValueKey('category-field')));
       await tap(tester, find.text('신발').last);
+      await tap(
+        tester,
+        find.byKey(const ValueKey('confirm-classification-change')),
+      );
       expect(find.byKey(const ValueKey('fit-A라인')), findsNothing);
       expect(
         tester
             .widget<TextFormField>(find.widgetWithText(TextFormField, '핏'))
             .controller!
             .text,
-        '기존 맞춤 핏',
+        '',
       );
       await tap(tester, find.text('옷 저장하기'));
-      expect(repo.items[garment.id]!.fit, '기존 맞춤 핏');
+      expect(repo.items[garment.id]!.fit, '');
+      expect(repo.items[garment.id]!.subtype, '');
     },
   );
 }

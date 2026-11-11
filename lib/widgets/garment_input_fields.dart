@@ -43,11 +43,19 @@ class SuggestedTextField extends StatelessWidget {
     required this.label,
     required this.suggestions,
     required this.onChanged,
+    required this.selectedValue,
+    required this.onApply,
+    required this.onSuggestionSelected,
+    this.errorText,
   });
   final TextEditingController controller;
   final String label;
   final List<String> suggestions;
   final VoidCallback onChanged;
+  final String selectedValue;
+  final String? errorText;
+  final VoidCallback onApply;
+  final ValueChanged<String> onSuggestionSelected;
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,13 +63,26 @@ class SuggestedTextField extends StatelessWidget {
       TextFormField(
         controller: controller,
         onChanged: (_) => onChanged(),
+        onFieldSubmitted: (_) => onApply(),
         maxLength: 80,
         decoration: InputDecoration(
           labelText: label,
-          helperText: '추천 선택 또는 직접 입력',
+          helperText: '추천 선택 또는 직접 입력 후 종류 적용',
+          helperMaxLines: 2,
+          errorText: errorText,
           border: const OutlineInputBorder(),
         ),
       ),
+      if (controller.text != selectedValue)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            key: const ValueKey('apply-subtype'),
+            onPressed: onApply,
+            icon: const Icon(Icons.check),
+            label: const Text('종류 적용'),
+          ),
+        ),
       const SizedBox(height: 8),
       Wrap(
         spacing: 8,
@@ -70,10 +91,9 @@ class SuggestedTextField extends StatelessWidget {
             .map(
               (v) => FilterChip(
                 label: Text(v),
-                selected: controller.text == v,
+                selected: selectedValue == v,
                 onSelected: (selected) {
-                  controller.text = selected ? v : '';
-                  onChanged();
+                  onSuggestionSelected(selected ? v : '');
                 },
               ),
             )
@@ -195,11 +215,13 @@ class CustomValuesInput extends StatefulWidget {
     required this.onChanged,
     this.excluded = '',
     this.hint,
+    this.onPendingChanged,
   });
   final String id, label, excluded;
   final String? hint;
   final List<String> values;
   final ValueChanged<List<String>> onChanged;
+  final ValueChanged<String>? onPendingChanged;
   @override
   State<CustomValuesInput> createState() => _CustomValuesInputState();
 }
@@ -207,6 +229,17 @@ class CustomValuesInput extends StatefulWidget {
 class _CustomValuesInputState extends State<CustomValuesInput> {
   final _text = TextEditingController();
   String? _error;
+  String _lastText = '';
+  @override
+  void initState() {
+    super.initState();
+    _text.addListener(() {
+      if (_lastText == _text.text) return;
+      _lastText = _text.text;
+      widget.onPendingChanged?.call(_lastText);
+    });
+  }
+
   @override
   void dispose() {
     _text.dispose();
@@ -287,9 +320,11 @@ class MaterialSelector extends StatelessWidget {
     super.key,
     required this.values,
     required this.onChanged,
+    this.onPendingChanged,
   });
   final List<String> values;
   final ValueChanged<List<String>> onChanged;
+  final ValueChanged<String>? onPendingChanged;
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -305,6 +340,7 @@ class MaterialSelector extends StatelessWidget {
         hint: '예: 면 70% / 폴리에스터 30%',
         values: values,
         onChanged: onChanged,
+        onPendingChanged: onPendingChanged,
       ),
       const SizedBox(height: 16),
       LayoutBuilder(
@@ -357,8 +393,8 @@ class FitSelector extends StatelessWidget {
   final VoidCallback onChanged;
   @override
   Widget build(BuildContext context) {
-    final fitContext = fitContextFor(category, subtype);
     final options = fitsForCategory(category, subtype: subtype);
+    final review = needsFitReview(category, subtype, controller.text);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -368,30 +404,53 @@ class FitSelector extends StatelessWidget {
           maxLength: 80,
           decoration: InputDecoration(
             labelText: '핏',
+            helperMaxLines: 3,
             helperText: options.isEmpty
                 ? '선택 사항 · 기존 값 유지 및 직접 입력 가능'
                 : '일러스트 선택 또는 직접 입력',
             border: OutlineInputBorder(),
           ),
         ),
+        if (review)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              '현재 분류의 추천에 없는 핏이에요. 기존 값·직접 입력값은 유지돼요. 변경 내용을 저장할 때 이 값을 유지할지 확인해요.',
+              key: const ValueKey('fit-review-notice'),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         if (options.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(top: 12),
-            child: Text('이 카테고리는 핏 추천을 생략해요. 입력하지 않아도 괜찮아요.'),
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              category == null
+                  ? '카테고리를 선택하면 맞는 핏 추천을 볼 수 있어요.'
+                  : '이 카테고리는 핏 추천을 생략해요. 입력하지 않아도 괜찮아요.',
+            ),
           ),
         if (options.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text(switch (fitContext) {
-            FitContext.pants => '바지 기준 실루엣 · 참고 일러스트',
-            FitContext.skirt => '스커트 기준 실루엣 · 참고 일러스트',
-            FitContext.dress => '원피스 기준 실루엣 · 참고 일러스트',
-            FitContext.set => '세트·점프수트 · 참고 아이콘',
-            _ => '상의 기준 실루엣 · 참고 일러스트',
-          }),
+          Text(
+            '${fitContextLabel(category, subtype)} 기준 실루엣 · 참고 일러스트',
+            key: const ValueKey('fit-context-label'),
+          ),
           const Text(
             '실제 착용 모습은 체형과 옷의 치수에 따라 달라요.',
             style: TextStyle(fontSize: 12),
           ),
+          if (fitContextFor(category, subtype) == FitContext.set)
+            const Text(
+              '그림의 구성품은 예시예요. 구성품마다 핏이 다르면 메모에 적어 주세요.',
+              style: TextStyle(fontSize: 12),
+            ),
+          if (fitContextFor(category, subtype) == FitContext.puffer)
+            const Text(
+              '패딩의 부피감과 몸에 맞는 여유는 달라요. 충전재가 있어도 오버핏인 것은 아니에요.',
+              style: TextStyle(fontSize: 12),
+            ),
           const SizedBox(height: 16),
           LayoutBuilder(
             builder: (context, constraints) => Wrap(
@@ -414,16 +473,15 @@ class FitSelector extends StatelessWidget {
                               : option.name;
                           onChanged();
                         },
-                        illustration: fitContext == FitContext.set
-                            ? const Icon(Icons.checkroom_outlined, size: 48)
-                            : CustomPaint(
-                                size: const Size(48, 62),
-                                painter: FitSilhouettePainter(
-                                  option.name,
-                                  category,
-                                  Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
+                        illustration: CustomPaint(
+                          size: const Size(48, 62),
+                          painter: FitSilhouettePainter(
+                            option.name,
+                            category,
+                            Theme.of(context).colorScheme.primary,
+                            subtype: subtype,
+                          ),
+                        ),
                       ),
                     ),
                   )
@@ -506,15 +564,24 @@ class ThicknessSelector extends StatelessWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.category,
   });
   final GarmentThickness? value;
   final ValueChanged<GarmentThickness?> onChanged;
+  final GarmentCategory? category;
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const Text(
-        '원단이 얼마나 두툼한지 골라주세요.\n두께는 보온성 점수가 아니며, 소재·충전재 등에 따라 따뜻함은 달라요.',
+      Text(
+        [
+              GarmentCategory.shoes,
+              GarmentCategory.bags,
+              GarmentCategory.accessories,
+              GarmentCategory.other,
+            ].contains(category)
+            ? '두께는 선택 사항이에요. 원단·재질의 두께를 비교하기 어렵다면 비워 두세요.\n굽 높이·밑창 높이·가방 크기를 뜻하지 않아요. 두께는 보온성 점수가 아니에요.'
+            : '원단이 얼마나 두툼한지 골라주세요.\n두께는 보온성 점수가 아니며, 소재·충전재 등에 따라 따뜻함은 달라요.',
       ),
       const SizedBox(height: 12),
       ...GarmentThickness.values.map(
@@ -523,7 +590,7 @@ class ThicknessSelector extends StatelessWidget {
           child: _IllustratedChoice(
             id: 'thickness-${option.level}',
             title: '${option.level}. ${option.label}',
-            description: option.example,
+            description: thicknessExample(option, category),
             selected: value == option,
             onTap: () => onChanged(value == option ? null : option),
             illustration: SizedBox(

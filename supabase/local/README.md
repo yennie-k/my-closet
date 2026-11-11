@@ -22,8 +22,8 @@ Client와 Server가 모두 표시되고 OSType은 `linux`여야 한다. Docker c
 프로젝트의 기존 `supabase/drafts`와 `tests`를 덮어쓰지 않도록 Git에서 이미 무시하는 `build` 안에 **새 폴더**를 사용한다. 다음은 시스템 준비 후의 수동 실행 예시다. 기존 경로가 있으면 자동 삭제하지 않고 중단한다.
 
 ```powershell
-Set-Location -LiteralPath C:\Projects\my_closet
-$localTestRoot = 'C:\Projects\my_closet\build\supabase-local-20261029'
+Set-Location -LiteralPath <PROJECT_ROOT>
+$localTestRoot = '<PROJECT_ROOT>\build\supabase-local-20261029'
 if (Test-Path -LiteralPath $localTestRoot) { throw '이미 존재하는 경로입니다. 새 실행 폴더를 선택하세요.' }
 New-Item -ItemType Directory -Path $localTestRoot
 Set-Location -LiteralPath $localTestRoot
@@ -53,7 +53,7 @@ npx.cmd --no-install supabase start --network-id my-closet-local-security-202610
 로컬 DB 컨테이너의 psql을 사용하면 Windows에 별도로 PostgreSQL을 설치할 필요가 없다. 실행 전 `docker inspect`로 이 실행의 project ID와 로컬 컨테이너인지 확인한다. SQL 실행 계정과 API 사용자 JWT의 권한은 구분한다.
 
 1. 로컬 `auth`/`storage` 관리형 스키마 및 역할이 준비됐는지 확인한다. DB 및 Storage 이미지 버전과 helper 정의도 기록한다.
-2. 기존 `C:\Projects\my_closet\supabase\drafts\01_database.draft.sql`을 읽어 로컬 psql에 `-X -v ON_ERROR_STOP=1`로 적용한다. 기존 앱 객체가 이미 있다면 중단하고 원인을 확인한다.
+2. 기존 `<PROJECT_ROOT>\supabase\drafts\01_database.draft.sql`을 읽어 로컬 psql에 `-X -v ON_ERROR_STOP=1`로 적용한다. 기존 앱 객체가 이미 있다면 중단하고 원인을 확인한다.
 3. 로컬 Studio 또는 로컬 Storage API로 `garment-photos` 비공개 버킷을 생성한다. `public=false`, `file_size_limit=2097152`, `allowed_mime_types=[image/jpeg,image/png,image/webp]`를 확인한다. SQL로 Storage 객체나 버킷을 직접 생성하지 않는다.
 4. `02_storage_policies.draft.sql`을 적용한다. 버킷 생성이 선행되어야 한다. helper/ACL preflight가 실패하면 정확한 메시지와 버전을 기록하고 중단한다.
 

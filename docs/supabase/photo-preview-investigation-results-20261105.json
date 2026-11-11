@@ -1,0 +1,316 @@
+{
+  "date": "2026-11-05",
+  "actual_stripe_cause": "not_confirmed",
+  "actual_user_file_read_or_copied": false,
+  "reported_metadata": {
+    "name": "camera JPEG",
+    "bytes": 88308,
+    "width": 2048,
+    "height": 1536,
+    "windows_bits": 24,
+    "dpi": 96
+  },
+  "production_change": "Pure normalizer extraction with identical codec/resize/quality; Flutter codec first-frame and dimension validation before accepting picker output.",
+  "limitations": [
+    "Valid but visually incorrect JPEG pixels cannot be rejected by structural decoding alone.",
+    "Synthetic codec comparison uses 16 pixel locations per image, not every pixel.",
+    "Headless Edge with GPU disabled does not reproduce the real hardware-accelerated rendering environment.",
+    "Actual file EXIF/ICC, subsampling and baseline/progressive markers are unknown."
+  ],
+  "tests": {
+    "flutter": {
+      "passed": 101,
+      "failed": 0,
+      "concurrency": 1
+    },
+    "codec_matrix": {
+      "passed": 28,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "jpeg-444",
+          "decoded_mae": 0.58,
+          "output_mae": 1.23,
+          "edge_jpeg_mae": 0.79,
+          "passed": true
+        },
+        {
+          "name": "jpeg-420",
+          "decoded_mae": 0.67,
+          "output_mae": 1.08,
+          "edge_jpeg_mae": 0.79,
+          "passed": true
+        },
+        {
+          "name": "jpeg-422",
+          "decoded_mae": 0.67,
+          "output_mae": 0.96,
+          "edge_jpeg_mae": 0.63,
+          "passed": true
+        },
+        {
+          "name": "jpeg-progressive",
+          "decoded_mae": 0.73,
+          "output_mae": 1.13,
+          "edge_jpeg_mae": 0.75,
+          "passed": true
+        },
+        {
+          "name": "jpeg-gray",
+          "decoded_mae": 0.06,
+          "output_mae": 0.19,
+          "edge_jpeg_mae": 0.13,
+          "passed": true
+        },
+        {
+          "name": "jpeg-cmyk",
+          "decoded_mae": 0.85,
+          "output_mae": 1.19,
+          "edge_jpeg_mae": 0.96,
+          "passed": true
+        },
+        {
+          "name": "png-rgb",
+          "decoded_mae": 0,
+          "output_mae": 0.5,
+          "edge_jpeg_mae": 0.46,
+          "passed": true
+        },
+        {
+          "name": "png-16bit",
+          "decoded_mae": 0,
+          "output_mae": 0.5,
+          "edge_jpeg_mae": 0.46,
+          "passed": true
+        },
+        {
+          "name": "png-interlace",
+          "decoded_mae": 0,
+          "output_mae": 0.5,
+          "edge_jpeg_mae": 0.46,
+          "passed": true
+        },
+        {
+          "name": "png-palette",
+          "decoded_mae": 0,
+          "output_mae": 2.02,
+          "edge_jpeg_mae": 2.06,
+          "passed": true
+        },
+        {
+          "name": "webp-lossy",
+          "decoded_mae": 0,
+          "output_mae": 0.92,
+          "edge_jpeg_mae": 0.79,
+          "passed": true
+        },
+        {
+          "name": "webp-lossless",
+          "decoded_mae": 0,
+          "output_mae": 0.5,
+          "edge_jpeg_mae": 0.46,
+          "passed": true
+        },
+        {
+          "name": "wide",
+          "decoded_mae": 0,
+          "output_mae": 1.1,
+          "edge_jpeg_mae": 0.75,
+          "passed": true
+        },
+        {
+          "name": "tall",
+          "decoded_mae": 0.52,
+          "output_mae": 1.42,
+          "edge_jpeg_mae": 1.06,
+          "passed": true
+        },
+        {
+          "name": "large-odd",
+          "decoded_mae": 0.52,
+          "output_mae": 1.38,
+          "edge_jpeg_mae": 1.1,
+          "passed": true
+        },
+        {
+          "name": "narrow",
+          "decoded_mae": 0,
+          "output_mae": 1.08,
+          "edge_jpeg_mae": 1.25,
+          "passed": true
+        },
+        {
+          "name": "2048-420",
+          "decoded_mae": 0.48,
+          "output_mae": 1.08,
+          "edge_jpeg_mae": 0.71,
+          "passed": true
+        },
+        {
+          "name": "2048-422",
+          "decoded_mae": 0.44,
+          "output_mae": 1.13,
+          "edge_jpeg_mae": 0.79,
+          "passed": true
+        },
+        {
+          "name": "2048-vertical",
+          "decoded_mae": 0.52,
+          "output_mae": 1.31,
+          "edge_jpeg_mae": 0.9,
+          "passed": true
+        },
+        {
+          "name": "2048-411",
+          "decoded_mae": 0.46,
+          "output_mae": 0.98,
+          "edge_jpeg_mae": 0.52,
+          "passed": true
+        },
+        {
+          "name": "2048-progressive",
+          "decoded_mae": 0.48,
+          "output_mae": 1.1,
+          "edge_jpeg_mae": 0.69,
+          "passed": true
+        },
+        {
+          "name": "exif-2",
+          "decoded_mae": 0.58,
+          "output_mae": 1.15,
+          "edge_jpeg_mae": 0.79,
+          "passed": true
+        },
+        {
+          "name": "exif-3",
+          "decoded_mae": 0.58,
+          "output_mae": 1.27,
+          "edge_jpeg_mae": 0.88,
+          "passed": true
+        },
+        {
+          "name": "exif-4",
+          "decoded_mae": 0.58,
+          "output_mae": 1.1,
+          "edge_jpeg_mae": 0.79,
+          "passed": true
+        },
+        {
+          "name": "exif-5",
+          "decoded_mae": 0.58,
+          "output_mae": 1.15,
+          "edge_jpeg_mae": 0.77,
+          "passed": true
+        },
+        {
+          "name": "exif-6",
+          "decoded_mae": 0.58,
+          "output_mae": 1,
+          "edge_jpeg_mae": 0.65,
+          "passed": true
+        },
+        {
+          "name": "exif-7",
+          "decoded_mae": 0.58,
+          "output_mae": 1.25,
+          "edge_jpeg_mae": 0.77,
+          "passed": true
+        },
+        {
+          "name": "exif-8",
+          "decoded_mae": 0.58,
+          "output_mae": 1.02,
+          "edge_jpeg_mae": 0.73,
+          "passed": true
+        }
+      ]
+    },
+    "flutter_edge": {
+      "passed": 4,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "2048-420.jpg",
+          "passed": true
+        },
+        {
+          "name": "png-rgb.png",
+          "passed": true
+        },
+        {
+          "name": "webp-lossless.webp",
+          "passed": true
+        },
+        {
+          "name": "exif-6.jpg",
+          "passed": true
+        }
+      ],
+      "isolated_port": 8082
+    },
+    "local_server": {
+      "passed": 3,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "2048-420.jpg",
+          "passed": true
+        },
+        {
+          "name": "png-rgb.png",
+          "passed": true
+        },
+        {
+          "name": "webp-lossless.webp",
+          "passed": true
+        }
+      ]
+    },
+    "indexeddb_browser_probe": "passed; isolated synthetic profile/database",
+    "analyze": "passed",
+    "default_web_build": "passed",
+    "development_web_build": "passed",
+    "diagnostic_web_build": "passed"
+  },
+  "preservation": [
+    {
+      "table": "public.garments",
+      "original": 85,
+      "current": 88,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "public.user_preferences",
+      "original": 2,
+      "current": 2,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "original": 58,
+      "current": 61,
+      "original_rows_unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "original": 3,
+      "current": 3,
+      "original_rows_unchanged": true
+    }
+  ],
+  "protected_files": [
+    "supabase/drafts/01_database.draft.sql",
+    "supabase/drafts/02_storage_policies.draft.sql",
+    "supabase/functions/verify-garment-photo/index.ts",
+    "supabase/functions/verify-garment-photo/adapter.ts",
+    "supabase/functions/verify-garment-photo/core.ts",
+    "supabase/functions/verify-garment-photo/image.ts",
+    "supabase/functions/garment-photo-operations/index.ts",
+    "supabase/functions/garment-photo-operations/adapter.ts",
+    "supabase/functions/garment-photo-operations/core.ts",
+    "lib/services/storage/indexeddb_wardrobe_repository.dart",
+    "lib/models/garment.dart"
+  ],
+  "cloud_connection": false,
+  "git_commit_push": false
+}

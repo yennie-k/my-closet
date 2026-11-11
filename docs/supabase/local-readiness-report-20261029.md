@@ -6,7 +6,7 @@
 
 | 항목 | 결과 |
 | --- | --- |
-| 프로젝트 | `C:\Projects\my_closet` |
+| 프로젝트 | `<PROJECT_ROOT>` |
 | Windows | Windows 11 Home, 64-bit, 10.0.26200 |
 | CPU | Intel Core i7-12700K, 12코어 / 20논리 프로세서 |
 | 가상화 | 펌웨어 가상화 및 SLAT `True` |

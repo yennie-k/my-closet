@@ -52,7 +52,7 @@ CLI 2.122.0 / Edge Runtime 1.77.8에서 게이트웨이 `verify_jwt` 기본값 t
 
 ## 로컬 실행
 
-실제 소스는 이 폴더에 있고 검증한 로컬 복사본은 `C:\Projects\my_closet_supabase_local\supabase\functions\verify-garment-photo`다. 서버 환경변수는 로컬 CLI가 주입하며 소스에 키를 작성하지 않는다.
+실제 소스는 이 폴더에 있고 검증한 로컬 복사본은 `<LOCAL_SUPABASE_DIR>\supabase\functions\verify-garment-photo`다. 서버 환경변수는 로컬 CLI가 주입하며 소스에 키를 작성하지 않는다.
 
 프로젝트 루트에서 `node supabase/local/worker-serve.mjs`를 실행한다. 이 진입점은 로컬 named pipe·포트·원격 연결 표식을 확인한 뒤 로컬 CLI의 `functions serve verify-garment-photo`만 호출한다. 이미 실행 중이면 두 번째 프로세스를 시작하지 않는다. `worker-sync.mjs`는 이번 작업에서 생성한 함수 파일만 해시 확인 후 동기화하며 이전 코드 사본을 보관한다.
 

@@ -443,7 +443,7 @@
       {
         "original": "supabase/local/exercise.mjs",
         "sha256": "c62929a44effa8dee685b8a1de6d26940d1b0aad7a0d38b3dd4a19bfe0720034",
-        "adapted": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-regression\\exercise.adapted.mjs",
+        "adapted": "<PROJECT_ROOT>\\build\\supabase-local\\20261029-worker-regression\\exercise.adapted.mjs",
         "changes": [
           "separate run IDs, paths and control bucket/policy",
           "absolute import of original local guard",
@@ -453,7 +453,7 @@
       {
         "original": "supabase/local/additional.mjs",
         "sha256": "6c6f9bf3507c904f800a9d70cbbd14d5bf195cf1baa1e856cd7b067e1f1d7947",
-        "adapted": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-regression\\additional.adapted.mjs",
+        "adapted": "<PROJECT_ROOT>\\build\\supabase-local\\20261029-worker-regression\\additional.adapted.mjs",
         "changes": [
           "separate run IDs, paths and control bucket/policy",
           "absolute import of original local guard"
@@ -462,7 +462,7 @@
       {
         "original": "supabase/local/delete-tests.mjs",
         "sha256": "934549a8bb435165915bdf4d961a1a5e39e88d327b2de4560ab479dfcaf3c469",
-        "adapted": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-regression\\delete-tests.adapted.mjs",
+        "adapted": "<PROJECT_ROOT>\\build\\supabase-local\\20261029-worker-regression\\delete-tests.adapted.mjs",
         "changes": [
           "separate run IDs, paths and control bucket/policy",
           "absolute import of original local guard"
@@ -909,7 +909,7 @@
     "buckets": 3
   },
   "backup": {
-    "path": "C:\\Projects\\my_closet\\build\\supabase-local\\20261029-worker-2\\before-worker.dump",
+    "path": "<PROJECT_ROOT>\\build\\supabase-local\\20261029-worker-2\\before-worker.dump",
     "sha256": "4542be518643c4223172005db86f258255345fed28cc21c7958dbbe0df488910",
     "restore_tested": false
   },

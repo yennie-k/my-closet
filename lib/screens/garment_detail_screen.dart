@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../models/garment.dart';
 import '../services/garment_photo_service.dart';
 import '../services/wardrobe_repository.dart';
+import '../services/revisioned_wardrobe_repository.dart';
+import '../services/server_photo_repository.dart';
+import '../widgets/server_photo_actions.dart';
 import '../widgets/common.dart';
 import '../widgets/garment_photo.dart';
 import 'garment_editor_screen.dart';
@@ -17,6 +20,7 @@ class GarmentDetailScreen extends StatefulWidget {
   final Garment garment;
   final WardrobeRepository repository;
   final GarmentPhotoService photoService;
+  bool get metadataOnly => repository is MetadataOnlyWardrobeRepository;
   @override
   State<GarmentDetailScreen> createState() => _GarmentDetailScreenState();
 }
@@ -42,7 +46,19 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> {
         ),
       ),
     );
-    if (mounted && updated != null) setState(() => _garment = updated);
+    if (mounted && updated != null) {
+      setState(() => _garment = updated);
+    } else if (mounted && widget.repository is ServerPhotoRepository) {
+      try {
+        final current =
+            await (widget.repository as RevisionedWardrobeRepository).refresh(
+              _garment,
+            );
+        if (mounted) setState(() => _garment = current);
+      } catch (e) {
+        if (mounted) setState(() => _error = wardrobeError(e));
+      }
+    }
   }
 
   Future<void> _delete() async {
@@ -50,7 +66,11 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('이 옷을 삭제할까요?'),
-        content: Text('“${_garment.name}”의 사진과 정보가 함께 삭제돼요. 삭제한 옷은 복원할 수 없어요.'),
+        content: Text(
+          widget.metadataOnly
+              ? '“${_garment.name}”의 서버 정보를 삭제해요. 사진·예약이 연결된 의류는 이 단계에서 삭제할 수 없어요. 이 기기의 옷장에는 영향을 주지 않아요.'
+              : '“${_garment.name}”의 사진과 정보가 함께 삭제돼요. 삭제한 옷은 복원할 수 없어요.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -69,7 +89,12 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> {
       _error = null;
     });
     try {
-      await widget.repository.delete(_garment.id);
+      final repository = widget.repository;
+      if (repository is RevisionedWardrobeRepository) {
+        await repository.deleteWithOriginal(_garment);
+      } else {
+        await repository.delete(_garment.id);
+      }
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) setState(() => _error = wardrobeError(e));
@@ -98,15 +123,27 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> {
                       height: 350,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: GarmentPhoto(
-                          garment: _garment,
-                          repository: widget.repository,
-                          fit: BoxFit.contain,
-                        ),
+                        child:
+                            widget.metadataOnly &&
+                                widget.repository is! ServerPhotoRepository
+                            ? const ServerPhotoPlaceholder()
+                            : GarmentPhoto(
+                                garment: _garment,
+                                repository: widget.repository,
+                                fit: BoxFit.contain,
+                              ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 24),
+                  if (widget.repository is ServerPhotoRepository) ...[
+                    ServerPhotoActions(
+                      repository: widget.repository as ServerPhotoRepository,
+                      garment: _garment,
+                      onChanged: (value) => setState(() => _garment = value),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                   Text(
                     _garment.name,
                     style: Theme.of(context).textTheme.headlineMedium,

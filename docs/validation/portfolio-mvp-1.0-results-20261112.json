@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-12",
+  "release": "Portfolio MVP 1.0",
+  "new_product_features_added": false,
+  "flutter": {
+    "analyze": "passed",
+    "tests_passed": 166,
+    "tests_failed": 0,
+    "concurrency": 1,
+    "default_web_build": "passed",
+    "local_development_web_build": "passed"
+  },
+  "node_photo_contracts": {
+    "passed": 39,
+    "failed": 0,
+    "skipped": 0,
+    "network": false
+  },
+  "sql_static": {
+    "files_parsed": 4,
+    "assertions_passed": 4,
+    "executed_on_database": false
+  },
+  "indexeddb_probe": {
+    "passed": true,
+    "dedicated_synthetic_browser_profile": true,
+    "page_reload_count": 2,
+    "legacy_read_update_delete_and_binary_persistence": true,
+    "actual_user_origin_opened": false
+  },
+  "not_rerun": [
+    "Supabase HTTP integration",
+    "SQL RLS/Storage API execution",
+    "manual app browser verification",
+    "full-app browser E2E",
+    "Android/iOS/Safari devices"
+  ],
+  "protection": {
+    "server_connected": false,
+    "sql_applied": false,
+    "separate_server_project_git_commands": false,
+    "real_photos_read_or_written": false,
+    "user_indexeddb_opened": false,
+    "unchanged_product_test_sql_function_files_compared": 79
+  },
+  "staging": {
+    "selected_change_count": 119,
+    "excluded_local_files": [
+      {
+        "file": "docs/supabase/jpeg-restart-results-20261109.json",
+        "reason": "Individual real-photo fingerprints/diagnostic data"
+      },
+      {
+        "file": "docs/supabase/webp-feasibility-20261111.md",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "docs/supabase/webp-feasibility-20261111/comparison-crops.png",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "docs/supabase/webp-feasibility-20261111/comparison-overview.png",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "docs/supabase/webp-feasibility-20261111/results.json",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "scripts/jpeg_readonly_edge_diagnostic.mjs",
+        "reason": "Personal single-file diagnosis, not MVP runtime"
+      },
+      {
+        "file": "scripts/webp_benchmark_browser.mjs",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "scripts/webp_benchmark_contact_sheet.mjs",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "scripts/webp_benchmark_report.mjs",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "scripts/webp_benchmark_worker.mjs",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "tool/fit_illustration_preview_test.dart",
+        "reason": "Auxiliary per-machine rendering experiment"
+      },
+      {
+        "file": "tool/jpeg_pixel_diagnostic_test.dart",
+        "reason": "Opt-in personal-file diagnosis"
+      },
+      {
+        "file": "tool/webp_benchmark_app.dart",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "tool/webp_benchmark_core.dart",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      },
+      {
+        "file": "tool/webp_benchmark_vm.dart",
+        "reason": "Separate WebP feasibility research, no production conversion"
+      }
+    ],
+    "security_audit": {
+      "index_files_scanned": 206,
+      "findings_count": 0,
+      "findings": [],
+      "reviewed_negative_test_vectors": 1,
+      "scope": "complete current Git index; no network, Git mutation or credential output",
+      "limitation": "Heuristic checks plus manual selection; not proof against every possible secret."
+    },
+    "cached_diff_check": "passed",
+    "selection_matches_index": true,
+    "excluded_visible_untracked_files": 14,
+    "private_diagnostic_ignored": true
+  },
+  "git": {
+    "commit_message": "feat: finalize My Closet portfolio MVP",
+    "push": false,
+    "uses_existing_author_configuration": true
+  },
+  "evidence": "Command logs and build artifacts are retained under ignored build/portfolio-finalization-20261112; no keys or account credentials are exported here."
+}
